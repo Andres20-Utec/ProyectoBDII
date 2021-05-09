@@ -60,10 +60,10 @@ bool compareByKey(Record &name1, Record &name2)
     return (strcmp(name2.nombre, name1.nombre) > 0);
 }
 
-streampos numRecords(string filename){
+int numRecords(string filename){
     ifstream file(filename, ios::binary);
     file.seekg(0, ios::end);
-    streampos n = file.tellg() / sizeof(Record);
+    int n = (int) file.tellg() / sizeof(Record);
     file.close();
     return n; 
 }

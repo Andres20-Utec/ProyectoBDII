@@ -180,7 +180,7 @@ public:
             auto sorted_records = reBuild();
             remove(this->datafile.c_str());
             remove(this->auxfile.c_str());
-            ofstream file(this->datafile, ios::binary);
+            ofstream file(this->datafile, ios::binary | ios::app);
             for(auto record : sorted_records)
                 file << record;
             file.close();
