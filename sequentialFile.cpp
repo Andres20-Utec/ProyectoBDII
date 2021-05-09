@@ -82,7 +82,7 @@ public:
 
     vector<Record> search(string key)
     {
-        reBuild();
+        if(numRecords(this->auxfile) > 0) reBuild(); //Evitar el salto de archivos
         if(key.size() > 20) key = key.substr(0, 20);
         int pos = bs_lower_bound(key);
         fstream inFile(this->datafile, ios::in | ios::binary);
@@ -99,11 +99,13 @@ public:
         return records;
     }
 
-    vector<Record> search_in_range(string begin, string end)
+    vector<Record> search_in_range(string start, string end)
     { 
-        reBuild();
+        if(numRecords(this->auxfile) > 0) reBuild(); //Evitar el salto de archivos
+        if(start.size() > 20) start = start.substr(0, 20);
+        if(end.size() > 20) end = end.substr(0, 20);
         vector<Record> beginToEnd;
-        int ptrB = bs_lower_bound(begin);
+        int ptrB = bs_lower_bound(start);
         int ptrA = bs_upper_bound(end) - 1;
         fstream inFile(this->datafile, ios::in | ios::binary);
         inFile.seekg(ptrB * sizeof(Record));
@@ -181,7 +183,7 @@ public:
         int pos = bs_upper_bound(key);
         int num_records_aux = numRecords(this->auxfile);
         fstream fsData(this->datafile, ios::in | ios::out | ios::binary);
-        ofstream fsAux(this->auxfile, ios::binary | ios::out | ios::app);
+        fstream fsAux(this->auxfile, ios::binary | ios::out | ios::app);
         // check the position of the pointer
         Record temp;
         fsData.seekg(sizeof(Record) * pos);
@@ -192,15 +194,83 @@ public:
             fsData.seekg(sizeof(Record) * pos);
             fsData >> temp;
         }
-        temp.nextDel = num_records_aux + 1;
-        temp.reference = 'a';
-        // Re write the record
-        fsData.seekg(sizeof(Record) * pos);
-        fsData << temp;
-        // Set the item and Add to fsAux;
-        record.reference = 'd';
-        record.nextDel = pos + 1;
-        fsAux << record;
+        if (temp.reference == 'd')
+        {
+            temp.nextDel = (fsAux.tellp() / sizeof(Record)) + 1;
+            temp.reference = 'a';
+            // Re write the record
+            fsData.seekg(sizeof(Record) * pos);
+            fsData << temp;
+            // Set the item and Add to fsAux;
+            record.reference = 'd';
+            record.nextDel = pos + 1;
+            int lastP = fsAux.tellg();
+            fsAux.seekg(0, ios::end);
+            fsAux << record;
+        }
+        else
+        {
+            // Check if we can put the new record between the records of the main file and aux file
+            int nextPosition = temp.nextDel; // 2
+            Record auxT;
+            fsAux.seekg(sizeof(Record) * (nextPosition - 1)); // Gato 1 a
+            fsAux >> auxT;                                    // Gato 1 a
+            if (strcmp(auxT.nombre, record.nombre) >= 0)      // gati > gerson
+            {
+                fsAux.seekp(0, ios::end);
+                // Calculate the new position of the record from the main file
+                temp.nextDel = (fsAux.tellp() / sizeof(Record)) + 1;
+                // Re write the record of the main file
+                fsData.seekg(sizeof(Record) * pos);
+                fsData << temp;
+                // Set the item and Add to fsAux;
+                record.nextDel = nextPosition;
+                record.reference = 'a';
+                fsAux << record;
+            }
+            else
+            {
+                int latestPosition = nextPosition - 1; // 1
+                do
+                {
+
+                    if (auxT.reference == 'a') // Gato 1 a
+                    {
+                        nextPosition = auxT.nextDel - 1; // 1 - 1 = 0
+                        fsAux.seekg(sizeof(Record) * nextPosition);
+                        fsAux >> auxT; // gonzalo cs 4 d
+                    }
+                    else
+                    {
+                        nextPosition = auxT.nextDel;
+                        fsData.seekg(sizeof(Record) * nextPosition);
+                        fsData >> auxT; // jorge
+                    }
+                    if (strcmp(record.nombre, auxT.nombre) > 0) // gerson > gonzalo false
+                    {
+                        latestPosition = nextPosition; // x
+                    }
+                    else
+                    {
+                        fsAux.seekg(sizeof(Record) * latestPosition); // gato 1 a
+                        fsAux >> auxT;                                // gato 1 a
+                        // SET AND ADD
+                        record.nextDel = auxT.nextDel;     // gerson 1 a
+                        record.reference = auxT.reference; // a
+                        fsAux.seekg(0, ios::end);
+                        fsAux << record; // gerson 1 a
+                        // set current auxT
+                        auxT.nextDel = (fsAux.tellg() / sizeof(Record));
+                        auxT.reference = 'a';
+                        fstream newAuxFile("aux.dat", ios::in | ios::out | ios::binary);
+                        newAuxFile.seekg(sizeof(Record) * latestPosition);
+                        newAuxFile << auxT;
+                        newAuxFile.close();
+                        break;
+                    }
+                } while (true);
+            }
+        }
         fsData.close();
         fsAux.close();
     }

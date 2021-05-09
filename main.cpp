@@ -61,6 +61,10 @@ void test_add(){
     cout << "**** TEST: End - add() ****\n" << endl;
 }
 
+void test_add_cases(){
+    
+}
+
 int main()
 {
     test_insertAll();
