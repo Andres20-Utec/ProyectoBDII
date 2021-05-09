@@ -8,7 +8,9 @@ private:
     string auxfile;
     int amount_control;
 public:
-    SequentialFile(string datafile, string auxfile) : datafile(datafile), auxfile(auxfile){
+    SequentialFile(string datafile, string auxfile){
+        this->datafile = datafile;
+        this->auxfile = auxfile;
         amount_control = 0;
     }
 
@@ -17,6 +19,8 @@ public:
         sort(records.begin(), records.end(), compareByKey);
         if(numRecords(this->datafile) == 0){
             ofstream ofs(this->datafile, ios::binary);
+            if(ofs.fail()) cout << "fail - insertall" << endl;
+            else cout << "ok -insertall" << endl;
             for (int i = 0; i < records.size(); i++){
                 records[i].nextDel = i + 1;
                 ofs << records[i];
@@ -30,9 +34,8 @@ public:
 
     int binarySearch(string key)
     {
-        fstream inFile(this->datafile, ios::in | ios::binary);
-        inFile.seekg(0, ios::beg);
         int low = 0, high = numRecords(this->datafile) - 1, mid;
+        fstream inFile(this->datafile, ios::in | ios::binary);
         char keyName[20];
         strcpy(keyName, key.c_str());
         while (high >= low)
@@ -103,8 +106,8 @@ public:
     }
 
     vector<Record> get_sorted_records(){
-        fstream fsAux("aux.dat", ios::in | ios::out | ios::binary);
-        fstream fsData("datos.dat", ios::in | ios::out | ios::binary);
+        fstream fsAux(this->auxfile, ios::in | ios::out | ios::binary);
+        fstream fsData(this->datafile, ios::in | ios::out | ios::binary);
         bool file_switch = false;         // Decide which file read
         int i = 0, nextPosition = 0;      // Select the next position
         vector<Record> records;
@@ -152,6 +155,7 @@ public:
     void isFull()
     {
         int amountOfRecords = numRecords(this->auxfile);
+        cout << "CANTIDAD EN AUX >> " << amountOfRecords << endl;
         if (amountOfRecords == CAPACITY){
             reBuild();
         }
@@ -159,12 +163,16 @@ public:
     void add(Record record)
     {
         isFull();
-        fstream fsData("datos.dat", ios::in | ios::out | ios::binary);
-        fstream fsAux("aux.dat", ios::out | ios::app | ios::binary);
         // Find the position
         string key = record.nombre;
         // Obtain the current pointer
         int pos = binarySearch(key);
+        int num_records_aux = numRecords(this->auxfile);
+        fstream fsData(this->datafile, ios::in | ios::out | ios::binary);
+        ofstream fsAux(this->auxfile, ios::binary | ios::out | ios::app);
+        if(fsAux.fail())
+            cout << "epic fail" << endl;
+        else cout << "ok" << endl;
         // check the position of the pointer
         Record temp;
         fsData.seekg(sizeof(Record) * pos);
@@ -175,7 +183,7 @@ public:
             fsData.seekg(sizeof(Record) * pos);
             fsData >> temp;
         }
-        temp.nextDel = numRecords(this->auxfile) + 1;
+        temp.nextDel = num_records_aux + 1;
         temp.reference = 'a';
         // Re write the record
         fsData.seekg(sizeof(Record) * pos);
@@ -189,8 +197,9 @@ public:
     }
     void printea()
     {
-        fstream fsData("datos.dat", ios::in | ios::out | ios::binary);
-        fstream fsAux("aux.dat", ios::out | ios::in | ios::binary);
+        fstream fsData(this->datafile, ios::in | ios::out | ios::binary);
+        fstream fsAux(this->auxfile, ios::out | ios::in | ios::binary);
+        cout << "\tData file" << endl;
         while (fsData)
         {
             Record r;
@@ -199,7 +208,7 @@ public:
                 break;
             r.showRecord();
         }
-        cout << endl;
+        cout << "\tAux file" << endl;
         while (fsAux)
         {
             Record r;

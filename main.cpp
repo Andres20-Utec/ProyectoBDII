@@ -3,7 +3,7 @@
 int main()
 {
     string datafile = "datos.dat";
-    string auxfile = "aux.dat";
+    string auxfile = "auxfile.dat";
     SequentialFile sf(datafile, auxfile);
 
     vector<Record> records = {
@@ -20,13 +20,14 @@ int main()
         Record("P-46", "Roxanne", "bio", 2)};
 
     sf.insertAll(records);
+    sf.printea();
+    cout << "------------------" << endl;
     // string nombre = "Andrea";
     // sf.search(nombre);
     // string n1 = "Claudia";
     // sf.search(n1);
     // string n2 = "Claza";
     // sf.search(n2);
-
     //sf.searchB("Andres", "Sagasti");
     sf.add(Record("P-18", "David", "cs", 0));
     sf.add(Record("P-18", "Thalia", "cs", 0));
