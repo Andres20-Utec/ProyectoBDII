@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <string.h>
 #define CAPACITY 5
 using namespace std;
 
