@@ -18,12 +18,12 @@ public:
         ofstream ofs(this->datafile, ios::binary);
         if(numRecords(this->datafile) == 0){
             int n = records.size();
-            for (int i = 0; i < n - 1; i++){
+            for (int i = 0; i < n; i++){
                 records[i].nextDel = i + 1;
                 ofs << records[i];
             }
-            records[n - 1].nextDel = -1;
-            ofs << records[n - 1];
+            /*records[n - 1].nextDel = -1;
+            ofs << records[n - 1];*/
         }else{
 
         }
