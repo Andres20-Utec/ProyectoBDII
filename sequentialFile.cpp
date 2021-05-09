@@ -19,8 +19,6 @@ public:
         sort(records.begin(), records.end(), compareByKey);
         if(numRecords(this->datafile) == 0){
             ofstream ofs(this->datafile, ios::binary);
-            if(ofs.fail()) cout << "fail - insertall" << endl;
-            else cout << "ok -insertall" << endl;
             for (int i = 0; i < records.size(); i++){
                 records[i].nextDel = i + 1;
                 ofs << records[i];
@@ -32,77 +30,92 @@ public:
         }
     }
 
-    int binarySearch(string key)
+    int bs_lower_bound(string key)
     {
         int low = 0, high = numRecords(this->datafile) - 1, mid;
         fstream inFile(this->datafile, ios::in | ios::binary);
         char keyName[20];
         strcpy(keyName, key.c_str());
-        while (high >= low)
+        while (high > low)
         {
             mid = (high + low) / 2;
             inFile.seekg(mid * sizeof(Record));
             Record r;
             inFile >> r;
-            if (strcmp(keyName, r.nombre) < 0)
+            if (strcmp(keyName, r.nombre) <= 0)
             {
-                high = mid - 1;
+                high = mid;
             }
-            else if (strcmp(keyName, r.nombre) > 0)
+            else
+            {
+                low = mid + 1;
+            }
+        }
+        inFile.close();
+        return low;
+    }
+
+    int bs_upper_bound(string key){
+        int low = 0, high = numRecords(this->datafile) - 1, mid;
+        fstream inFile(this->datafile, ios::in | ios::binary);
+        char keyName[20];
+        strcpy(keyName, key.c_str());
+        while (high > low)
+        {
+            mid = (high + low) / 2;
+            inFile.seekg(mid * sizeof(Record));
+            Record r;
+            inFile >> r;
+            if (strcmp(keyName, r.nombre) >= 0)
             {
                 low = mid + 1;
             }
             else
             {
-                break;
+                high = mid;
             }
         }
         inFile.close();
-        return mid;
+        return low;
+
     }
 
-    bool search(string key)
+    vector<Record> search(string key)
     {
-        int pos = binarySearch(key);
+        reBuild();
+        if(key.size() > 20) key = key.substr(0, 20);
+        int pos = bs_lower_bound(key);
         fstream inFile(this->datafile, ios::in | ios::binary);
+        vector<Record> records;
         Record r1;
-
         inFile.seekg(pos * sizeof(Record));
-        inFile >> r1;
-        inFile.close();
-
-        if (strcmp(r1.nombre, key.c_str()) == 0)
-        {
-            cout << r1.nombre << " : Position -> " << pos << endl;
-            return true;
+        while(!inFile.eof()){
+            inFile >> r1;
+            if(r1.nombre == key)
+                records.push_back(r1);
+            else
+                break;
         }
-        else
-        {
-            cout << "Error :" << r1.nombre << " : Position -> " << pos << endl;
-            return false;
-        }
+        return records;
     }
 
-    void search_in_range(string begin, string end)
-    {
+    vector<Record> search_in_range(string begin, string end)
+    { 
+        reBuild();
         vector<Record> beginToEnd;
-        int ptrB = binarySearch(begin);
-        int ptrA = binarySearch(end);
+        int ptrB = bs_lower_bound(begin);
+        int ptrA = bs_upper_bound(end) - 1;
         fstream inFile(this->datafile, ios::in | ios::binary);
         inFile.seekg(ptrB * sizeof(Record));
         while (ptrB <= ptrA)
         {
             Record r;
             inFile >> r;
-            cout << r.nombre << endl;
             beginToEnd.push_back(r);
             ptrB++;
         }
-        for (int i = 0; i < beginToEnd.size(); i++)
-        {
-            beginToEnd[i].showRecord();
-        }
         inFile.close();
+        return beginToEnd;
     }
 
     vector<Record> get_sorted_records(){
@@ -155,7 +168,6 @@ public:
     void isFull()
     {
         int amountOfRecords = numRecords(this->auxfile);
-        cout << "CANTIDAD EN AUX >> " << amountOfRecords << endl;
         if (amountOfRecords == CAPACITY){
             reBuild();
         }
@@ -166,13 +178,10 @@ public:
         // Find the position
         string key = record.nombre;
         // Obtain the current pointer
-        int pos = binarySearch(key);
+        int pos = bs_upper_bound(key);
         int num_records_aux = numRecords(this->auxfile);
         fstream fsData(this->datafile, ios::in | ios::out | ios::binary);
         ofstream fsAux(this->auxfile, ios::binary | ios::out | ios::app);
-        if(fsAux.fail())
-            cout << "epic fail" << endl;
-        else cout << "ok" << endl;
         // check the position of the pointer
         Record temp;
         fsData.seekg(sizeof(Record) * pos);
@@ -195,11 +204,11 @@ public:
         fsData.close();
         fsAux.close();
     }
-    void printea()
+    void printAll()
     {
         fstream fsData(this->datafile, ios::in | ios::out | ios::binary);
         fstream fsAux(this->auxfile, ios::out | ios::in | ios::binary);
-        cout << "\tData file" << endl;
+        cout << "Data file: " << endl;
         while (fsData)
         {
             Record r;
@@ -208,7 +217,8 @@ public:
                 break;
             r.showRecord();
         }
-        cout << "\tAux file" << endl;
+        cout << ">>>>>>>>>>>>>>>>>>>>>>>" << endl;
+        cout << "Aux file: " << endl;
         while (fsAux)
         {
             Record r;
@@ -217,7 +227,7 @@ public:
                 break;
             r.showRecord();
         }
-
+        cout << ">>>>>>>>>>>>>>>>>>>>>>>" << endl;
         fsData.close();
         fsAux.close();
     }
