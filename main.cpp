@@ -35,5 +35,8 @@ int main()
     sf.add(Record("P-18", "Cenia", "cs", 8));
     sf.add(Record("P-18", "Saba", "cs", 8));
     sf.printea();
+    cout << "------------------" << endl;
+    sf.reBuild();
+    sf.printea();
     return 0;
 }

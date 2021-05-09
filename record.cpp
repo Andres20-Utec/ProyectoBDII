@@ -62,8 +62,11 @@ bool compareByKey(Record &name1, Record &name2)
 
 int numRecords(string filename){
     ifstream file(filename, ios::binary);
-    file.seekg(0, ios::end);
-    int n = (int) file.tellg() / sizeof(Record);
-    file.close();
-    return n; 
+    if(file.is_open()){
+        file.seekg(0, ios::end);
+        int n = (int) file.tellg() / sizeof(Record);
+        file.close();
+        return n;
+    }
+    else return 0;
 }

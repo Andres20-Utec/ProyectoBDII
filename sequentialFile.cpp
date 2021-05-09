@@ -15,106 +15,72 @@ public:
     void insertAll(vector<Record> &records)
     {
         sort(records.begin(), records.end(), compareByKey);
-        ofstream ofs(this->datafile, ios::binary);
         if(numRecords(this->datafile) == 0){
-            int n = records.size();
-            for (int i = 0; i < n; i++){
+            ofstream ofs(this->datafile, ios::binary);
+            for (int i = 0; i < records.size(); i++){
                 records[i].nextDel = i + 1;
                 ofs << records[i];
             }
-            /*records[n - 1].nextDel = -1;
-            ofs << records[n - 1];*/
+            ofs.close();
         }else{
-
+            for(int i = 0; i < records.size(); i++)
+                add(records[i]);
         }
-
-        ofs.close();
     }
 
     int binarySearch(string key)
     {
         fstream inFile(this->datafile, ios::in | ios::binary);
-        int l = 0;
-        int u; // Amount of records
-        char keyName[20];
-        int sizeRecord = sizeof(Record);
-        inFile.seekg(0, ios::end);
-        u = (inFile.tellg() / sizeof(Record)) - 1; // Amount of Records
-        strcpy(keyName, key.c_str());
-        int m;
         inFile.seekg(0, ios::beg);
-        while (u >= l)
+        int low = 0, high = numRecords(this->datafile) - 1, mid;
+        char keyName[20];
+        strcpy(keyName, key.c_str());
+        while (high >= low)
         {
-            m = (l + u) / 2;
-            inFile.seekg(m * sizeRecord);
+            mid = (high + low) / 2;
+            inFile.seekg(mid * sizeof(Record));
             Record r;
             inFile >> r;
             if (strcmp(keyName, r.nombre) < 0)
             {
-                u = m - 1;
+                high = mid - 1;
             }
             else if (strcmp(keyName, r.nombre) > 0)
             {
-                l = m + 1;
+                low = mid + 1;
             }
             else
             {
-                inFile.seekg(0, ios::beg);
                 break;
             }
-            inFile.seekg(0, ios::beg);
         }
         inFile.close();
-        return m;
+        return mid;
     }
 
-    void search(string key)
+    bool search(string key)
     {
+        int pos = binarySearch(key);
         fstream inFile(this->datafile, ios::in | ios::binary);
-        int l = 0;
-        int u; // Amount of records
-        char keyName[20];
-        int sizeRecord = sizeof(Record);
-        inFile.seekg(0, ios::end);
-        u = (inFile.tellg() / sizeof(Record)) - 1; // Amount of Records
-        strcpy(keyName, key.c_str());
-        int m;
-        inFile.seekg(0, ios::beg);
-        while (u >= l)
-        {
-            m = (l + u) / 2;
-            inFile.seekg(m * sizeRecord);
-            Record r;
-            inFile >> r;
-            if (strcmp(keyName, r.nombre) < 0)
-            {
-                u = m - 1;
-            }
-            else if (strcmp(keyName, r.nombre) > 0)
-            {
-                l = m + 1;
-            }
-            else
-            {
-                break;
-            }
-        }
-        inFile.seekg(m * sizeof(Record));
         Record r1;
+
+        inFile.seekg(pos * sizeof(Record));
         inFile >> r1;
-        inFile.seekg(0, ios::beg);
         inFile.close();
-        if (strcmp(r1.nombre, keyName) == 0)
+
+        if (strcmp(r1.nombre, key.c_str()) == 0)
         {
-            cout << r1.nombre << " : Position -> " << m << endl;
+            cout << r1.nombre << " : Position -> " << pos << endl;
+            return true;
         }
         else
         {
-            cout << "Error :" << r1.nombre << " : Position -> " << m << endl;
+            cout << "Error :" << r1.nombre << " : Position -> " << pos << endl;
+            return false;
         }
-        // return r1;
     }
-    void searchB(string begin, string end)
+
+    void search_in_range(string begin, string end)
     {
         vector<Record> beginToEnd;
         int ptrB = binarySearch(begin);
@@ -136,7 +102,7 @@ public:
         inFile.close();
     }
 
-    vector<Record> reBuild(){
+    vector<Record> get_sorted_records(){
         fstream fsAux("aux.dat", ios::in | ios::out | ios::binary);
         fstream fsData("datos.dat", ios::in | ios::out | ios::binary);
         bool file_switch = false;         // Decide which file read
@@ -173,17 +139,21 @@ public:
         return records;
     }
 
+    void reBuild(){
+        auto sorted_records = get_sorted_records();
+        remove(this->datafile.c_str());
+        remove(this->auxfile.c_str());
+        ofstream file(this->datafile, ios::binary);
+        for(auto record : sorted_records)
+            file << record;
+        file.close();
+    }
+
     void isFull()
     {
         int amountOfRecords = numRecords(this->auxfile);
         if (amountOfRecords == CAPACITY){
-            auto sorted_records = reBuild();
-            remove(this->datafile.c_str());
-            remove(this->auxfile.c_str());
-            ofstream file(this->datafile, ios::binary | ios::app);
-            for(auto record : sorted_records)
-                file << record;
-            file.close();
+            reBuild();
         }
     }
     void add(Record record)
@@ -205,7 +175,7 @@ public:
             fsData.seekg(sizeof(Record) * pos);
             fsData >> temp;
         }
-        temp.nextDel = (fsAux.tellp() / sizeof(Record)) + 1;
+        temp.nextDel = numRecords(this->auxfile) + 1;
         temp.reference = 'a';
         // Re write the record
         fsData.seekg(sizeof(Record) * pos);
@@ -242,7 +212,4 @@ public:
         fsData.close();
         fsAux.close();
     }
-
-private:
-    void f();
 };
