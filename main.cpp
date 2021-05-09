@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+
 #define CAPACITY 5
 using namespace std;
 
@@ -203,7 +203,7 @@ public:
             {
                 Record temp;
                 if (control)
-                {
+                { // 3 a -> 3 d
                     fsData.seekg(sizeof(Record) * nextPosition);
                     fsData >> temp;
                     if (temp.reference == 'a')
@@ -258,30 +258,100 @@ public:
     {
         isFull();
         fstream fsData("datos.dat", ios::in | ios::out | ios::binary);
-        fstream fsAux("aux.dat", ios::out | ios::app | ios::binary);
+        fstream fsAux("aux.dat", ios::app | ios::out | ios::in | ios::binary);
         // Find the position
         string key = record.nombre;
         // Obtain the current pointer
         int pos = binarySearch(key);
         // check the position of the pointer
-        Record temp;
+        Record temp; // Gabriela 2 a
         fsData.seekg(sizeof(Record) * pos);
         fsData >> temp;
+        // Select the position in the main file
         if (strcmp(temp.nombre, record.nombre) > 0)
         {
             pos--;
             fsData.seekg(sizeof(Record) * pos);
             fsData >> temp;
         }
-        temp.nextDel = (fsAux.tellp() / sizeof(Record)) + 1;
-        temp.reference = 'a';
-        // Re write the record
-        fsData.seekg(sizeof(Record) * pos);
-        fsData << temp;
-        // Set the item and Add to fsAux;
-        record.reference = 'd';
-        record.nextDel = pos + 1;
-        fsAux << record;
+        if (temp.reference == 'd')
+        {
+            temp.nextDel = (fsAux.tellp() / sizeof(Record)) + 1;
+            temp.reference = 'a';
+            // Re write the record
+            fsData.seekg(sizeof(Record) * pos);
+            fsData << temp;
+            // Set the item and Add to fsAux;
+            record.reference = 'd';
+            record.nextDel = pos + 1;
+            int lastP = fsAux.tellg();
+            fsAux.seekg(0, ios::end);
+            fsAux << record;
+        }
+        else
+        {
+            // Check if we can put the new record between the records of the main file and aux file
+            int nextPosition = temp.nextDel; // 2
+            Record auxT;
+            fsAux.seekg(sizeof(Record) * (nextPosition - 1)); // Gato 1 a
+            fsAux >> auxT;                                    // Gato 1 a
+            if (strcmp(auxT.nombre, record.nombre) >= 0)      // gati > gerson
+            {
+                fsAux.seekp(0, ios::end);
+                // Calculate the new position of the record from the main file
+                temp.nextDel = (fsAux.tellp() / sizeof(Record)) + 1;
+                // Re write the record of the main file
+                fsData.seekg(sizeof(Record) * pos);
+                fsData << temp;
+                // Set the item and Add to fsAux;
+                record.nextDel = nextPosition;
+                record.reference = 'a';
+                fsAux << record;
+            }
+            else
+            {
+                int latestPosition = nextPosition - 1; // 1
+                do
+                {
+
+                    if (auxT.reference == 'a') // Gato 1 a
+                    {
+                        nextPosition = auxT.nextDel - 1; // 1 - 1 = 0
+                        fsAux.seekg(sizeof(Record) * nextPosition);
+                        fsAux >> auxT; // gonzalo cs 4 d
+                    }
+                    else
+                    {
+                        nextPosition = auxT.nextDel;
+                        fsData.seekg(sizeof(Record) * nextPosition);
+                        fsData >> auxT; // jorge
+                    }
+                    if (strcmp(record.nombre, auxT.nombre) > 0) // gerson > gonzalo false
+                    {
+                        latestPosition = nextPosition; // x
+                    }
+                    else
+                    {
+                        fsAux.seekg(sizeof(Record) * latestPosition); // gato 1 a
+                        fsAux >> auxT;                                // gato 1 a
+                        // SET AND ADD
+                        record.nextDel = auxT.nextDel;     // gerson 1 a
+                        record.reference = auxT.reference; // a
+                        fsAux.seekg(0, ios::end);
+                        fsAux << record; // gerson 1 a
+                        // set current auxT
+                        auxT.nextDel = (fsAux.tellg() / sizeof(Record));
+                        auxT.reference = 'a';
+                        fstream newAuxFile("aux.dat", ios::in | ios::out | ios::binary);
+                        newAuxFile.seekg(sizeof(Record) * latestPosition);
+                        newAuxFile << auxT;
+                        newAuxFile.close();
+                        break;
+                    }
+                } while (true);
+            }
+        }
+
         fsData.close();
         fsAux.close();
     }
@@ -321,7 +391,7 @@ int main()
     SequentialFile sf(filename);
 
     vector<Record> records = {
-        Record("P-11", "Andres", "cs", 1),
+        Record("P-11", "Abad", "cs", 1),
         Record("P-72", "Sagasti", "cs", 5),
         Record("P-33", "Jorge", "cs", 1),
         Record("P-74", "Claudia", "cs", 5),
@@ -332,10 +402,9 @@ int main()
         Record("P-56", "Saori", "cs", 5),
         Record("P-18", "Nozomi", "cs", 0),
         Record("P-46", "Roxanne", "bio", 2)};
-
     sort(records.begin(), records.end(), compareByKey);
-
     sf.insertAll(records);
+
     // string nombre = "Andrea";
     // sf.search(nombre);
     // string n1 = "Claudia";
@@ -343,13 +412,18 @@ int main()
     // string n2 = "Claza";
     // sf.search(n2);
 
-    //sf.searchB("Andres", "Sagasti");
-    sf.add(Record("P-18", "David", "cs", 0));
-    sf.add(Record("P-18", "Thalia", "cs", 0));
-    sf.add(Record("P-18", "Moca", "cs", 0));
+    sf.add(Record("P-18", "Gonzalo", "cs", 0));
+    sf.add(Record("P-18", "Gato", "cs", 0));
     sf.add(Record("P-18", "Rosa", "cs", 8));
-    sf.add(Record("P-18", "Cenia", "cs", 8));
-    sf.add(Record("P-18", "Saba", "cs", 8));
+    // sf.add(Record("P-18", "Gabriel", "cs", 8));
     sf.printea();
+    cout << endl;
+    sf.add(Record("P-18", "Gerson", "cs", 8));
+
+    cout << endl;
+    sf.add(Record("P-19", "Yetsabella", "cs", 8));
+    sf.add(Record("P-18", "Cenia", "cs", 8));
+    sf.printea();
+    // sf.printea();
     return 0;
 }
