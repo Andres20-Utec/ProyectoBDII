@@ -4,7 +4,10 @@
 #include <fstream>
 #include <algorithm>
 #include <stdexcept>
-#define CAPACITY 5;
+#include <stdio.h>
+#include <stdlib.h>
+
+#define CAPACITY 5
 using namespace std;
 
 struct Record
@@ -187,27 +190,79 @@ public:
 
     void isFull()
     {
-        fstream fsAux("aux.dat", ios::in | ios::binary);
+        fstream fsAux("aux.dat", ios::in | ios::out | ios::binary);
         fstream fsData("datos.dat", ios::in | ios::out | ios::binary);
-        int amountOfRecords = fsAux.tellg() / sizeof(Record);
+        fsAux.seekp(0, ios::end);
+        int amountOfRecords = fsAux.tellp() / sizeof(Record);
+        vector<Record> sortRegister;
         if (amountOfRecords == CAPACITY)
         {
-            cout << "This work!!" << endl;
+            bool control = true;         // Decide which file read
+            int i = 0, nextPosition = 0; // Select the next position
+            while (fsAux || fsData)
+            {
+                Record temp;
+                if (control)
+                {
+                    fsData.seekg(sizeof(Record) * nextPosition);
+                    fsData >> temp;
+                    if (temp.reference == 'a')
+                    {
+                        nextPosition = temp.nextDel - 1;
+                        control = false;
+                    }
+                    else
+                    {
+                        nextPosition = temp.nextDel;
+                    }
+                }
+                else
+                {
+                    fsAux.seekg(sizeof(Record) * nextPosition);
+                    fsAux >> temp;
+                    if (temp.reference == 'd')
+                    {
+                        nextPosition = temp.nextDel;
+                        control = true;
+                    }
+                    else
+                    {
+                        nextPosition = temp.nextDel - 1;
+                    }
+                }
+                i++;
+                temp.nextDel = i;
+                temp.reference = 'd';
+                if (fsAux.eof() || fsData.eof())
+                    break;
+                sortRegister.push_back(temp);
+            }
+            //remove both files
+            remove("datos.dat");
+            remove("aux.dat");
         }
-        fs.Aux.close();
-        fsData.close();
+
+        if (!sortRegister.empty())
+        {
+            fstream Data2(filename, ios::app | ios::binary);
+            for (int i = 0; i < sortRegister.size(); i++)
+            {
+                Data2 << sortRegister[i];
+            }
+            Data2.close();
+        }
+
         return;
     }
     void add(Record record)
     {
-
+        isFull();
         fstream fsData("datos.dat", ios::in | ios::out | ios::binary);
         fstream fsAux("aux.dat", ios::out | ios::app | ios::binary);
         // Find the position
         string key = record.nombre;
         // Obtain the current pointer
         int pos = binarySearch(key);
-        cout << pos << ' ';
         // check the position of the pointer
         Record temp;
         fsData.seekg(sizeof(Record) * pos);
@@ -218,8 +273,6 @@ public:
             fsData.seekg(sizeof(Record) * pos);
             fsData >> temp;
         }
-        cout << pos << endl;
-
         temp.nextDel = (fsAux.tellp() / sizeof(Record)) + 1;
         temp.reference = 'a';
         // Re write the record
@@ -267,34 +320,36 @@ int main()
     string filename = "datos.dat";
     SequentialFile sf(filename);
 
-    // vector<Record> records = {
-    //     Record("P-11", "Andres", "cs", 1),
-    //     Record("P-72", "Sagasti", "cs", 5),
-    //     Record("P-33", "Jorge", "cs", 1),
-    //     Record("P-74", "Claudia", "cs", 5),
-    //     Record("P-25", "Gabriela", "cs", 1),
-    //     Record("P-96", "Carla", "cs", 5),
-    //     Record("P-89", "Zora", "cs", 0),
-    //     Record("P-79", "Talía", "bio", 2),
-    //     Record("P-56", "Saori", "cs", 5),
-    //     Record("P-18", "Nozomi", "cs", 0),
-    //     Record("P-46", "Roxanne", "bio", 2)};
+    vector<Record> records = {
+        Record("P-11", "Andres", "cs", 1),
+        Record("P-72", "Sagasti", "cs", 5),
+        Record("P-33", "Jorge", "cs", 1),
+        Record("P-74", "Claudia", "cs", 5),
+        Record("P-25", "Gabriela", "cs", 1),
+        Record("P-96", "Carla", "cs", 5),
+        Record("P-89", "Zora", "cs", 0),
+        Record("P-79", "Talía", "bio", 2),
+        Record("P-56", "Saori", "cs", 5),
+        Record("P-18", "Nozomi", "cs", 0),
+        Record("P-46", "Roxanne", "bio", 2)};
 
-    // sort(records.begin(), records.end(), compareByKey);
+    sort(records.begin(), records.end(), compareByKey);
 
-    // sf.insertAll(records);
+    sf.insertAll(records);
     // string nombre = "Andrea";
     // sf.search(nombre);
     // string n1 = "Claudia";
     // sf.search(n1);
     // string n2 = "Claza";
     // sf.search(n2);
-    // //sf.searchB("Andres", "Sagasti");
-    // sf.add(Record("P-18", "David", "cs", 0));
-    // sf.add(Record("P-18", "Thalia", "cs", 0));
-    // sf.add(Record("P-18", "Moca", "cs", 0));
-    //sf.add(Record("P-18", "Rosa", "cs", 8));
+
+    //sf.searchB("Andres", "Sagasti");
+    sf.add(Record("P-18", "David", "cs", 0));
+    sf.add(Record("P-18", "Thalia", "cs", 0));
+    sf.add(Record("P-18", "Moca", "cs", 0));
     sf.add(Record("P-18", "Rosa", "cs", 8));
+    sf.add(Record("P-18", "Cenia", "cs", 8));
+    sf.add(Record("P-18", "Saba", "cs", 8));
     sf.printea();
     return 0;
 }
