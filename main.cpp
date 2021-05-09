@@ -166,26 +166,64 @@ public:
         }
         // return r1;
     }
-    void searchB(string begin, string end)
+    vector<Record> searchB(string begin, string end)
     {
         vector<Record> beginToEnd;
         int ptrB = binarySearch(begin);
         int ptrA = binarySearch(end);
-        fstream inFile(this->filename, ios::in | ios::binary);
-        inFile.seekg(ptrB * sizeof(Record));
-        while (ptrB <= ptrA)
+        fstream dataFile(this->filename, ios::in | ios::binary);
+        fstream auxFile("aux.dat", ios::in | ios::binary);
+        Record recordA;
+        dataFile.seekg(ptrA * sizeof(Record));
+        dataFile >> recordA;
+        //dataFile.skeeg(ptr)
+        dataFile.seekg(ptrB * sizeof(Record));
+        bool control = true;
+        int nextPosition = ptrB;
+        while (true)
         {
-            Record r;
-            inFile >> r;
-            cout << r.nombre << endl;
-            beginToEnd.push_back(r);
-            ptrB++;
+            Record temp;
+            if (control)
+            {
+                dataFile.seekg(nextPosition * sizeof(Record));
+                dataFile >> temp;
+                if (temp.reference == 'a')
+                {
+                    nextPosition = temp.nextDel - 1;
+                    control = false;
+                }
+                else
+                {
+                    nextPosition = temp.nextDel;
+                }
+            }
+            else
+            {
+                auxFile.seekg(sizeof(Record) * nextPosition);
+                auxFile >> temp;
+                if (temp.reference == 'd')
+                {
+                    nextPosition = temp.nextDel;
+                    control = true;
+                }
+                else
+                {
+                    nextPosition = temp.nextDel - 1;
+                }
+            }
+            if (strcmp(recordA.nombre, temp.nombre) < 0)
+            {
+                break;
+            }
+            beginToEnd.push_back(temp);
         }
         for (int i = 0; i < beginToEnd.size(); i++)
         {
             beginToEnd[i].showRecord();
         }
-        inFile.close();
+        dataFile.close();
+        auxFile.close();
+        return beginToEnd;
     }
 
     void isFull()
@@ -203,7 +241,7 @@ public:
             {
                 Record temp;
                 if (control)
-                { // 3 a -> 3 d
+                {
                     fsData.seekg(sizeof(Record) * nextPosition);
                     fsData >> temp;
                     if (temp.reference == 'a')
@@ -390,20 +428,20 @@ int main()
     string filename = "datos.dat";
     SequentialFile sf(filename);
 
-    vector<Record> records = {
-        Record("P-11", "Abad", "cs", 1),
-        Record("P-72", "Sagasti", "cs", 5),
-        Record("P-33", "Jorge", "cs", 1),
-        Record("P-74", "Claudia", "cs", 5),
-        Record("P-25", "Gabriela", "cs", 1),
-        Record("P-96", "Carla", "cs", 5),
-        Record("P-89", "Zora", "cs", 0),
-        Record("P-79", "Talía", "bio", 2),
-        Record("P-56", "Saori", "cs", 5),
-        Record("P-18", "Nozomi", "cs", 0),
-        Record("P-46", "Roxanne", "bio", 2)};
-    sort(records.begin(), records.end(), compareByKey);
-    sf.insertAll(records);
+    // vector<Record> records = {
+    //     Record("P-11", "Abad", "cs", 1),
+    //     Record("P-72", "Sagasti", "cs", 5),
+    //     Record("P-33", "Jorge", "cs", 1),
+    //     Record("P-74", "Claudia", "cs", 5),
+    //     Record("P-25", "Gabriela", "cs", 1),
+    //     Record("P-96", "Carla", "cs", 5),
+    //     Record("P-89", "Zora", "cs", 0),
+    //     Record("P-79", "Talía", "bio", 2),
+    //     Record("P-56", "Saori", "cs", 5),
+    //     Record("P-18", "Nozomi", "cs", 0),
+    //     Record("P-46", "Roxanne", "bio", 2)};
+    // sort(records.begin(), records.end(), compareByKey);
+    // sf.insertAll(records);
 
     // string nombre = "Andrea";
     // sf.search(nombre);
@@ -412,18 +450,18 @@ int main()
     // string n2 = "Claza";
     // sf.search(n2);
 
-    sf.add(Record("P-18", "Gonzalo", "cs", 0));
-    sf.add(Record("P-18", "Gato", "cs", 0));
-    sf.add(Record("P-18", "Rosa", "cs", 8));
-    // sf.add(Record("P-18", "Gabriel", "cs", 8));
-    sf.printea();
-    cout << endl;
-    sf.add(Record("P-18", "Gerson", "cs", 8));
+    // sf.add(Record("P-18", "Gonzalo", "cs", 0));
+    // sf.add(Record("P-18", "Gato", "cs", 0));
+    // sf.add(Record("P-18", "Rosa", "cs", 8));
+    // // sf.add(Record("P-18", "Gabriel", "cs", 8));
+    // sf.printea();
+    // cout << endl;
+    // sf.add(Record("P-18", "Gerson", "cs", 8));
 
-    cout << endl;
-    sf.add(Record("P-19", "Yetsabella", "cs", 8));
-    sf.add(Record("P-18", "Cenia", "cs", 8));
-    sf.printea();
+    // cout << endl;
+    // sf.add(Record("P-19", "Yetsabella", "cs", 8));
+    // sf.add(Record("P-18", "Cenia", "cs", 8));
+    sf.searchB("Celeste", "Rosa");
     // sf.printea();
     return 0;
 }
