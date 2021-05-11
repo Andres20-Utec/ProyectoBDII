@@ -27,7 +27,7 @@ struct Record
 
     void showRecord()
     {
-        cout << this->codigo << " " << this->nombre << " " << this->carrera << "  " << this->nextDel << " " << reference << endl;
+        cout << this->codigo << "-" << this->nombre << "-" << this->carrera << "-" << this->nextDel << "-" << reference << endl;
     }
 
     void setRecord()
@@ -58,15 +58,4 @@ struct Record
 bool compareByKey(Record &name1, Record &name2)
 {
     return (strcmp(name2.nombre, name1.nombre) > 0);
-}
-
-int numRecords(string filename){
-    ifstream file(filename, ios::binary);
-    if(file.is_open()){
-        file.seekg(0, ios::end);
-        int n = (int) file.tellg() / sizeof(Record);
-        file.close();
-        return n;
-    }
-    else return 0;
 }

@@ -61,15 +61,41 @@ void test_add(){
     cout << "**** TEST: End - add() ****\n" << endl;
 }
 
-void test_add_cases(){
-    
+void test_add2(){
+    cout << "**** TEST: Start - add() 2****" << endl;
+    // ANTES DEL PRIMER REGISTRO DEL DATAFILE
+    vector<Record> records = {
+            Record("P-11", "Ana", "cs", 1),
+            Record("P-72", "Carlos", "cs", 5),};
+    sf.insertAll(records);
+    sf.add(Record("P-18", "Aa", "cs", 8));
+    sf.printAll();
+    sf.reBuild();
+    sf.printAll();
+    cout << "**** TEST: End - add() 2****\n" << endl;
 }
 
-int main()
-{
+void test_add3(){
+    cout << "**** TEST: Start - add() 3****" << endl;
+    // DESPUES DEL ULTIMO REGISTRO DEL DATAFILE
+    vector<Record> records = {
+            Record("P-11", "Ana", "cs", 1),
+            Record("P-72", "Carlos", "cs", 5),};
+    sf.insertAll(records);
+    sf.printAll();
+    sf.add(Record("P-18", "Zz", "cs", 8));
+    sf.printAll();
+    sf.reBuild();
+    sf.printAll();
+    cout << "**** TEST: End - add() 3****\n" << endl;
+}
+
+int main(){
     test_insertAll();
     test_search();
     test_search_in_range();
     test_add();
+    //test_add2();
+    //test_add3();
     return 0;
 }
