@@ -6,4 +6,4 @@ struct Node{
     int count;
 
     Node(): count(0) {}
-}
+};
