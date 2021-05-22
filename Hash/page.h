@@ -1,14 +1,11 @@
-#pragma once
-#include <iostream>
-#include <vector>
-using namespace std;
-#define  N 5
-struct Register{
-  string code;
+#include "GlobalConstants.h"
 
-};
-
-struct Page{
-  Register records[N];
+template <typename Register>
+class Page{
+private:
+  Register records[PAGESIZE];
   int nextPage;
+public:
+  Page(){}
+  Page(int nextPage): nextPage(nextPage) {}
 };
