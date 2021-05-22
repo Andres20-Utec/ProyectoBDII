@@ -86,7 +86,7 @@ public:
                 writeRegister(record, recordPosition, file);
             }
             file.close();
-            cout << "Se agrego correctamente" << endl;
+            cout << "Se agrego correctamente - add()" << endl;
             return recordPosition;
         }
         else{
@@ -95,6 +95,8 @@ public:
             int header = -1;
             writeHeader(header, file);
             writeRegister(record, 0, file);
+
+            cout << "Se agrego correctamente - add()" << endl;
             return 0;
         }
     }
@@ -107,12 +109,27 @@ public:
             return record;
         }
         if(position >= 0 && position < numberOfRecords(file)){
-            int header;
-            readHeader(header, file);
             readRegister(record, position, file);
             file.close();
             return record;
         }else throw out_of_range("Indice incorrecto");
+    }
+
+    void writeRecord(AddressType position, Register& record){
+        fstream file(this->path.c_str(), ios::binary | ios::in);
+        if(numberOfRecords(file) == 0){
+            cout << "archivo vacio - writeRecord()" << endl;
+            return;
+        }
+        if(position >= 0 && position < numberOfRecords(file)){
+            file.close();
+            file.open(this->path.c_str(), ios::binary | ios::out | ios::in);
+            writeRegister(record, position, file);
+            file.close();
+        }else{
+            cout << "indice incorrecto - writeRecord()" << endl;
+            return;
+        }
     }
 
     void deleteRecord(int position){
