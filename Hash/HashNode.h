@@ -1,24 +1,29 @@
 #include "GlobalConstants.h"
 #include <functional>
 
-class HashNode{
-protected:
+struct HashNode{
     AddressType left;
     AddressType right;
     AddressType bucketPosition;
     bool isLeaf;
     int nextDel;
-public:
+
+    AddressType getBucketPosition() const {
+        if(isLeaf)
+            return bucketPosition;
+        else throw invalid_argument("No es un nodo hoja");
+    }
+
     HashNode() = default;;
     HashNode(AddressType left, AddressType right){
         this->left = left;
         this->right = right;
         this->isLeaf = false;
+        this->nextDel = 0;
     }
     HashNode(AddressType bucketPosition){
         this->bucketPosition = bucketPosition;
         this->isLeaf = true;
+        this->nextDel = 0;
     }
-    template <class Register, class Key, class Hash = std::hash<Key> >
-    class HashIndex;
 };
