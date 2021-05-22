@@ -1,25 +1,24 @@
 #include "GlobalConstants.h"
+#include <functional>
 
-class Node{
+class HashNode{
 protected:
-    bool isLeaf;
-public:
-    Node() {}
-    Node(bool isLeaf): isLeaf(isLeaf) {}
-};
-
-class HashInternalNode : public Node{
-private:
     AddressType left;
     AddressType right;
+    AddressType bucketPosition;
+    bool isLeaf;
+    int nextDel;
 public:
-    HashInternalNode(){}
-};
-
-class HashLeafNode : public Node{
-private:
-    AddressType pagePosition;
-public:
-    HashLeafNode() {}
-    HashLeafNode(AddressType pagePosition): pagePosition(pagePosition) {}
+    HashNode() = default;;
+    HashNode(AddressType left, AddressType right){
+        this->left = left;
+        this->right = right;
+        this->isLeaf = false;
+    }
+    HashNode(AddressType bucketPosition){
+        this->bucketPosition = bucketPosition;
+        this->isLeaf = true;
+    }
+    template <class Register, class Key, class Hash = std::hash<Key> >
+    class HashIndex;
 };
