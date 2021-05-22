@@ -1,6 +1,6 @@
 #include <iostream>
-#include "FreeList.h"
-#include "Alumno.h"
+#include "../FreeList.h"
+#include "../Alumno.h"
 using namespace std;
 
 void createData(){
@@ -9,31 +9,14 @@ void createData(){
     int header = -1;
     file.write((char *) &header, sizeof(header));
 
-    Alumno student;
-    strcpy(student.codigo, "0001\0");
-    strcpy(student.nombre, "Howard\0");
-    strcpy(student.apellidos, "Paredes Zegarra\0");
-    strcpy(student.carrera, "Computacion\0");
-    student.ciclo = 5;
-    student.mensualidad = 2000;
-    student.nextDel = 0;
-    file.write((char *) &student, sizeof(student));
+    Alumno student("0001", "Howard", "Paredes Zegarra", "Computacion", 5, 2000);
+    file.write((char *) &student, sizeof(Alumno));
 
-    strcpy(student.codigo, "0002\0");
-    strcpy(student.nombre, "Penny\0");
-    strcpy(student.apellidos, "Vargas Cordero\0");
-    strcpy(student.carrera, "Industrial\0");
-    student.ciclo = 2;
-    student.mensualidad = 2500;
-    file.write((char *) &student, sizeof(student));
+    Alumno student2("0002", "Penny", "Vargas Cordero", "Industrial", 2, 2500);
+    file.write((char *) &student2, sizeof(Alumno));
 
-    strcpy(student.codigo, "0003\0");
-    strcpy(student.nombre, "Sheldon\0");
-    strcpy(student.apellidos, "Cooper Vega\0");
-    strcpy(student.carrera, "Mecatronica\0");
-    student.ciclo = 9;
-    student.mensualidad = 3200;
-    file.write((char *) &student, sizeof(student));
+    Alumno student3("0003", "Sheldon", "Cooper Vega", "Mecatronica", 9, 3200);
+    file.write((char *) &student3, sizeof(Alumno));
 
     file.close();
 }
@@ -56,14 +39,7 @@ void loadFile(){
 void addStudent(){
     cout << "******** AGREGAR ESTUDIANTE ********" << endl;
     FreeList<Alumno> test("datos1.dat");
-    Alumno student;
-    strcpy(student.codigo, "0004\0");
-    strcpy(student.nombre, "Johan\0");
-    strcpy(student.apellidos, "Tanta Villanueva\0");
-    strcpy(student.carrera, "CS\0");
-    student.ciclo = 7;
-    student.mensualidad = 1800;
-    student.nextDel = 0;
+    Alumno student("0004", "Johan", "Tanta Villanueva", "CS", 7, 1800);
     test.add(student);
     auto students = test.load();
     showStudents(students);
@@ -73,14 +49,7 @@ void addStudent(){
 void addStudent2(){
     cout << "******** AGREGAR ESTUDIANTE 2********" << endl;
     FreeList<Alumno> test("datos1.dat");
-    Alumno student;
-    strcpy(student.codigo, "0007\0");
-    strcpy(student.nombre, "Javier\0");
-    strcpy(student.apellidos, "Gutierrez Ayzanoa\0");
-    strcpy(student.carrera, "Industrial\0");
-    student.ciclo = 1;
-    student.mensualidad = 4000;
-    student.nextDel = 0;
+    Alumno student("0007", "Javier", "Gutierrez Ayzanoa", "Industrial", 1, 4000);
     test.add(student);
     auto students = test.load();
     showStudents(students);
