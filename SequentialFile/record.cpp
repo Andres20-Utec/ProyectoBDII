@@ -4,8 +4,7 @@
 #include <string.h>
 using namespace std;
 
-struct Record
-{
+struct Record{
     char codigo[5];
     char nombre[20];
     char carrera[15];
