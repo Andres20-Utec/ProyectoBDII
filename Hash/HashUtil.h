@@ -1,7 +1,6 @@
-#include <iostream>
 #include <cmath>
 #include "GlobalConstants.h"
-using namespace std;
+
 // https://www.geeksforgeeks.org/program-to-find-the-next-prime-number/
 
 bool isPrime(int n){
