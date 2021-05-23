@@ -8,7 +8,7 @@ template<class Register>
 class FreeList{
 private:
     string path;
-    
+
     void readHeader(int& header, fstream& file){
         file.seekg(0, ios::beg);
         file.read((char *)& header, sizeof(int));
@@ -46,7 +46,7 @@ public:
         this->path = path;
     }
     int getNumberOfRecords(){
-        fstream file(this->path, ios::binary | ios::in);
+        fstream file(this->path.c_str(), ios::binary | ios::in);
         return numberOfRecords(file);
     }
     vector<Register> load(){

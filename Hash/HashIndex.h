@@ -56,13 +56,44 @@ public:
             else return searchNode(node.right, key, ++height);
         }
     }
+    vector<Register> search(Key searchKey){
+        bitset hashKey = myHash(searchKey);
+        int height = 0;
+        AddressType currentNodePosition = searchNode(ROOT, hashKey, height);
+        HashNode currentNode = indexFile.readRecord(currentNodePosition);
+        AddressType currentBucketPosition = currentNode.getBucketPosition();
+        vector<Register> output;
+        while(currentBucketPosition != -1){
+            Bucket bucket = bucketFile.readRecord(currentBucketPosition);
+            for(auto& r: bucket.getRecords()){
+                if(r.compareByPrimaryKey(searchKey))
+                    output.push_back(r);
+            }
+            currentBucketPosition = bucket.getNextBucket();
+        }
+        return output;
+    }
+
+    vector<Register> searchInRange(Key beginKey, Key endKey){
+        int bucketNumber = bucketFile.getNumberOfRecords();
+        vector<Register> output;
+        for(int i = 0; i < bucketNumber; ++i){
+            Bucket bucket = bucketFile.readRecord(i);
+            for(auto& r : bucket.getRecords()){
+                if(r.lessThanEqualKey(endKey) && r.greatherThanEqualKey(beginKey))
+                    output.push_back(r);
+            }
+        }
+        sort(output.begin(), output.end(), Bucket::compareRecords);
+        return output;
+    }
 
     void insert(Register record){
         if(bucketFile.getNumberOfRecords() == 0)
             initializeFirstValues();
         int height = 0;
         bitset hashKey = myHash(record.getPrimaryKey());
-        AddressType currentNodePosition = searchNode(0, hashKey, height);
+        AddressType currentNodePosition = searchNode(ROOT, hashKey, height);
         HashNode currentNode = indexFile.readRecord(currentNodePosition);
         AddressType currentBucketPosition = currentNode.getBucketPosition();
         Bucket bucket = bucketFile.readRecord(currentBucketPosition);
@@ -104,6 +135,8 @@ public:
             }
         }
         bucketFile.deleteRecord(currentBucketPosition);
+        bucket1.sortBucket();
+        bucket2.sortBucket();
         AddressType bucketPosition1 = bucketFile.add(bucket1);
         AddressType bucketPosition2 = bucketFile.add(bucket2);
         HashNode leftNode(bucketPosition1), rightNode(bucketPosition2);
@@ -123,6 +156,56 @@ public:
                 splitNode = indexFile.readRecord(splitNodePosition);
                 split(record, height+1, splitNodePosition, splitNode, bucketPosition2, bucket2);
             }
+        }
+    }
+    void remove(Key key){
+        int height = 0;
+        removeUtil(ROOT, key, myHash(key), height);
+    }
+    void removeUtil(int nodePosition, Key key, bitset hashKey, int& height) {
+        HashNode currentNode = indexFile.readRecord(nodePosition);
+        if (currentNode.isLeaf) {
+            deleteRecordInBucket(key, currentNode, nodePosition);
+            return;
+        }
+        if (hashKey[height] == 0) removeUtil(currentNode.left, key, hashKey, ++height);
+        else removeUtil(currentNode.right, key, hashKey, ++height);
+
+        if(nodePosition == ROOT) return;
+        HashNode left = indexFile.readRecord(currentNode.left);
+        HashNode right = indexFile.readRecord(currentNode.right);
+
+        if (left.isLeaf && right.isLeaf) {
+            Bucket bucket1 = bucketFile.readRecord(left.bucketPosition);
+            Bucket bucket2 = bucketFile.readRecord(right.bucketPosition);
+            if (bucket1.empty() && bucket2.empty()) {
+                bucketFile.deleteRecord(left.bucketPosition);
+                bucketFile.deleteRecord(right.bucketPosition);
+                indexFile.deleteRecord(currentNode.left);
+                indexFile.deleteRecord(currentNode.right);
+                Bucket newBucket;
+                currentNode.isLeaf = true;
+                currentNode.bucketPosition = bucketFile.add(newBucket);
+                indexFile.writeRecord(nodePosition, currentNode);
+            }
+        }
+    }
+
+    void deleteRecordInBucket(Key key, HashNode &currentNode, AddressType nodePosition) {
+        AddressType currentBucketPosition = currentNode.bucketPosition;
+        Bucket bucket = bucketFile.readRecord(currentBucketPosition);
+        vector<Register> records;
+        for(auto& record : bucket.getRecords()){
+            if(!record.compareByPrimaryKey(key))
+                records.push_back(record);
+        }
+        bucket.setRecords(records);
+        bucketFile.writeRecord(currentBucketPosition, bucket);
+        if(bucket.empty() && bucket.getNextBucket() != -1){
+            currentNode.bucketPosition = bucket.getNextBucket();
+            bucketFile.deleteRecord(currentBucketPosition);
+            indexFile.writeRecord(nodePosition, currentNode);
+            deleteRecordInBucket(key, currentNode, nodePosition);
         }
     }
 };
