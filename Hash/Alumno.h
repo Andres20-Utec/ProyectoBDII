@@ -38,12 +38,27 @@ public:
         cout << "Mensualidad : " << mensualidad << endl;
         cout << "NEXTDEL     : " << nextDel << endl;
     }
-    bool operator < (Alumno other){
+    bool operator < (Alumno& other){
         return strcmp(this->codigo, other.codigo) < 0;
+    }
+
+    bool operator == (Alumno& other){
+        return strcmp(this->codigo, other.codigo) == 0;
     }
 
     const char *getPrimaryKey() const {
         return codigo;
+    }
+    bool compareByPrimaryKey(const char* searchKey){
+        return strcmp(this->codigo, searchKey) == 0;
+    }
+
+    bool lessThanEqualKey(const char* searchKey){
+        return strcmp(this->codigo, searchKey) <= 0;
+    }
+
+    bool greatherThanEqualKey(const char* searchKey){
+        return strcmp(this->codigo, searchKey) >= 0;
     }
 };
 
