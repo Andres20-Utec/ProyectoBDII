@@ -49,4 +49,16 @@ public:
         output.insert(output.begin(), records, records+count);
         return output;
     }
+
+    void setRecords(vector<Register> newRecords){
+        count = 0;
+        for(auto& record : newRecords){
+            records[count] = record;
+            count++;
+        }
+    }
+
+    bool empty(){
+        return count == 0;
+    }
 };
