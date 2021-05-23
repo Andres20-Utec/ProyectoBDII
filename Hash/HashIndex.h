@@ -52,7 +52,6 @@ public:
         if(node.isLeaf)
             return nodePosition;
         else{
-            cout << "Key[" << height << "] = " << key[height] << endl;
             if(key[height] == 0) return searchNode(node.left, key, ++height);
             else return searchNode(node.right, key, ++height);
         }
