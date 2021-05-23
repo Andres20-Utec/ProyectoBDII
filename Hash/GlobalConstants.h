@@ -3,6 +3,6 @@
 #define GLOBALCONSTANTS
 
 #define AddressType int 
-#define BUCKETSIZE 4
+#define BUCKETSIZE 3
 #define MAXHEIGHT 3
 #endif

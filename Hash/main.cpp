@@ -15,9 +15,11 @@ void testInsert() {
 void testInsert2(){
     HashIndex<Alumno, const char *, AlumnoHash> test("indexFile.dat", "bucketFile.dat");
     Alumno student("0001", "Howard", "Paredes Zegarra", "Computacion", 5, 2000);
-
+    for(int i = 0; i <= BUCKETSIZE; ++i){
+        test.insert(student);
+    }
 }
 
 int main(){
-    testInsert();
+    testInsert2();
 }

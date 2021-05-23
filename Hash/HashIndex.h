@@ -57,38 +57,73 @@ public:
             else return searchNode(node.right, key, ++height);
         }
     }
+
     void insert(Register record){
         if(bucketFile.getNumberOfRecords() == 0)
             initializeFirstValues();
         int height = 0;
-        int a = indexFile.getNumberOfRecords();
-        int b = bucketFile.getNumberOfRecords();
         bitset hashKey = myHash(record.getPrimaryKey());
-        cout << "HASHKEY >> " << hashKey << endl;
-        AddressType nodePosition = searchNode(0, hashKey, height);
-        HashNode currentNode = indexFile.readRecord(nodePosition);
-        Bucket bucket = bucketFile.readRecord(currentNode.getBucketPosition());
+        AddressType currentNodePosition = searchNode(0, hashKey, height);
+        HashNode currentNode = indexFile.readRecord(currentNodePosition);
+        AddressType currentBucketPosition = currentNode.getBucketPosition();
+        Bucket bucket = bucketFile.readRecord(currentBucketPosition);
         if(!bucket.isFull()){
             bucket.add(record);
             bucket.sortBucket();
-            bucketFile.writeRecord(currentNode.getBucketPosition(), bucket);
-        }else{
-            vector<Register> records = bucket.getRecords();
-            records.push_back(record);
-            Bucket bucket1, bucket2;
-            for(auto& r : records){
-                bitset hashKey = myHash(r.getPrimaryKey());
-                if(hashKey[height] == 0) bucket1.add(r);
-                else bucket2.add(r);
+            bucketFile.writeRecord(currentBucketPosition, bucket);
+        }else
+            split(record, height, currentNodePosition, currentNode, currentBucketPosition, bucket);
+    }
+
+    void split(Register& record, int height, int currentNodePosition, HashNode& currentNode, int currentBucketPosition,
+               Bucket& bucket) {
+        if(height == MAXHEIGHT){
+            Bucket bucketToLink;
+            bucketToLink.add(record);
+            bucketToLink.setNextBucket(currentBucketPosition);
+            currentNode.bucketPosition = bucketFile.add(bucketToLink);
+            indexFile.writeRecord(currentNodePosition, currentNode);
+            return;
+        }
+        vector<Register> records = bucket.getRecords();
+        records.push_back(record);
+        Bucket bucket1, bucket2;
+        bool splitAgain = false;
+        bool splitToLeft = false;
+        for(auto& r : records){
+            bitset hashKey = myHash(r.getPrimaryKey());
+            if(hashKey[height] == 0){
+                if(!bucket1.isFull()) bucket1.add(r);
+                else{
+                    splitAgain = true;
+                    splitToLeft = true;
+                }
             }
-            bucketFile.deleteRecord(currentNode.getBucketPosition());
-            AddressType bucketPosition1 = bucketFile.add(bucket1);
-            AddressType bucketPosition2 = bucketFile.add(bucket2);
-            HashNode leftNode(bucketPosition1), rightNode(bucketPosition2);
-            currentNode.left = indexFile.add(leftNode);
-            currentNode.right = indexFile.add(rightNode);
-            currentNode.isLeaf = false;
-            indexFile.writeRecord(nodePosition, currentNode);
+            else{
+                if(!bucket2.isFull()) bucket2.add(r);
+                else splitAgain = true;
+            }
+        }
+        bucketFile.deleteRecord(currentBucketPosition);
+        AddressType bucketPosition1 = bucketFile.add(bucket1);
+        AddressType bucketPosition2 = bucketFile.add(bucket2);
+        HashNode leftNode(bucketPosition1), rightNode(bucketPosition2);
+        currentNode.left = indexFile.add(leftNode);
+        currentNode.right = indexFile.add(rightNode);
+        currentNode.isLeaf = false;
+        indexFile.writeRecord(currentNodePosition, currentNode);
+        if(splitAgain){
+            AddressType splitNodePosition, splitBucketPosition;
+            HashNode splitNode;
+            if(splitToLeft) {
+                splitNodePosition = currentNode.left;
+                splitNode = indexFile.readRecord(splitNodePosition);
+                split(record, height+1, splitNodePosition, splitNode, bucketPosition1, bucket1);
+            }else{
+                splitNodePosition = currentNode.right;
+                splitNode = indexFile.readRecord(splitNodePosition);
+                split(record, height+1, splitNodePosition, splitNode, bucketPosition2, bucket2);
+            }
         }
     }
 };

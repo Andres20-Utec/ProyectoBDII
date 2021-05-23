@@ -10,8 +10,17 @@ public:
     int nextDel;
     Bucket(): nextBucket(-1), nextDel(0), count(0) {}
     explicit Bucket(int nextBucket): nextBucket(nextBucket), nextDel(0), count(0) {}
+
     bool isFull(){
         return count == BUCKETSIZE;
+    }
+
+    void setNextBucket(int nextPosition){
+        this->nextBucket = nextPosition;
+    }
+
+    int getNextBucket() const {
+        return nextBucket;
     }
 
     void add(Register record){
