@@ -14,14 +14,7 @@ private:
     FreeList<Bucket> bucketFile;
     FreeList<HashNode> indexFile;
     Hash myHash;
-
-    static int numberOfRecords(const string& filename){
-        ifstream file(filename, ios::binary);
-        if(file.is_open()){
-            return 1;
-        }
-            return 0;
-    }
+    
 public:
     HashIndex()= default;
     HashIndex(const string& indexFilePath, const string& bucketFilePath){
