@@ -29,19 +29,23 @@ void printTestEnd(){
 }
 
 void insertByDefault(){
-    cout << R"(Se inserta las keys: "0001", "0002", "0003")" <<endl;
+    cout << R"(Se inserta las keys: "0001", "0002", "0003, 0004, 0005")" <<endl;
     Alumno student("0001", "Howard", "Paredes Zegarra", "Computacion", 5, 2000);
     Alumno student2("0002", "Penny", "Vargas Cordero", "Industrial", 2, 2500);
     Alumno student3("0003", "Sheldon", "Cooper Vega", "Mecatronica", 9, 3200);
+    Alumno student4("0004", "Gabriela", "García Vega", "Mecatronica", 1, 3200);
+    Alumno student5("0005", "Renato", "Rodriguez Vega", "Mecatronica", 2, 3200);
     test.insert(student);
     test.insert(student2);
     test.insert(student3);
+    test.insert(student4);
+    test.insert(student5);
 }
 
 void insertTest() {
     printTestStart("insert()");
     insertByDefault();
-    auto output = test.searchInRange("0001", "0003");
+    auto output = test.searchInRange("0001", "0005");
     showAll(output);
     printTestEnd();
 }
@@ -53,23 +57,23 @@ void bucketsLinkTest(){
     for(int i = 1; i <= BUCKETSIZE+1; ++i){
         test.insert(student);
     }
-    auto output = test.search("0001");
+    auto output = test.search("0004");
     showAll(output);
     printTestEnd();
 }
 
 void searchTest(){
-    printTestStart(R"(search("0002"))");
+    printTestStart(R"(search("0005"))");
     insertByDefault();
-    vector<Alumno> output = test.search("0002");
+    vector<Alumno> output = test.search("0005");
     showAll<Alumno>(output);
     printTestEnd();
 }
 
 void searchPerRangeTest(){
-    printTestStart(R"(serachPerRange("0001", "0002"))");
+    printTestStart(R"(serachPerRange("0001", "0004"))");
     insertByDefault();
-    vector<Alumno> output = test.searchInRange("0001", "0002");
+    vector<Alumno> output = test.searchInRange("0001", "0004");
     showAll<Alumno>(output);
     printTestEnd();
 }
@@ -83,10 +87,31 @@ void removeTest(){
     printTestEnd();
 }
 
+void specialCase(){
+    printTestStart(R"(Remover 2 nodos hojas)");
+    Alumno student("0002", "Jose", "Del Monte", "Computacion", 5, 2000);
+    Alumno student1("0000", "Ricardo", "Del Sol ", "Computacion", 5, 2000);
+    Alumno student2("0001", "Geronimo","Del Aguila", "Bio", 6, 1231);
+
+    for(int i = 0; i < 5; i++){
+        test.insert(student);
+        test.insert(student1);
+    }
+    test.insert(student2);
+    
+    test.remove("0002");
+    test.remove("0000");
+    
+    vector<Alumno> output = test.searchInRange("0000", "0002");
+    showAll<Alumno>(output);
+    printTestEnd();
+}
+
 int main(){
-    insertTest();
-    bucketsLinkTest();
-    searchTest();
-    searchPerRangeTest();
-    removeTest();
+    // insertTest();
+    // bucketsLinkTest();
+    // searchTest();
+    // searchPerRangeTest();
+    // removeTest();
+    specialCase();
 }
