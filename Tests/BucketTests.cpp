@@ -1,5 +1,5 @@
-#include "../Bucket.h"
-#include "../Alumno.h"
+#include "../Hash/Bucket.h"
+#include "../Entities/Alumno.h"
 using namespace std;
 
 int main(){

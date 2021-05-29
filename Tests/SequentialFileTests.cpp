@@ -1,4 +1,4 @@
-#include "sequentialFile.cpp"
+#include "../SequentialFile/SequentialFile.cpp"
 string datafile = "datafile.dat";
 string auxfile = "auxfile.dat";
 SequentialFile sf(datafile, auxfile);
@@ -6,17 +6,17 @@ SequentialFile sf(datafile, auxfile);
 void test_insertAll(){
     cout << "**** TEST: Start - insertAll()****" << endl;
     vector<Record> records = {
-        Record("P-11", "Andres", "cs", 1),
-        Record("P-72", "Sagasti", "cs", 5),
-        Record("P-33", "Jorge", "cs", 1),
-        Record("P-74", "Claudia", "cs", 5),
-        Record("P-25", "Gabriela", "cs", 1),
-        Record("P-96", "Carla", "cs", 5),
-        Record("P-89", "Zora", "cs", 0),
-        Record("P-79", "Talía", "bio", 2),
-        Record("P-56", "Saori", "cs", 5),
-        Record("P-18", "Nozomi", "cs", 0),
-        Record("P-46", "Roxanne", "bio", 2)};
+            Record("P-11", "Andres", "cs", 1),
+            Record("P-72", "Sagasti", "cs", 5),
+            Record("P-33", "Jorge", "cs", 1),
+            Record("P-74", "Claudia", "cs", 5),
+            Record("P-25", "Gabriela", "cs", 1),
+            Record("P-96", "Carla", "cs", 5),
+            Record("P-89", "Zora", "cs", 0),
+            Record("P-79", "Talía", "bio", 2),
+            Record("P-56", "Saori", "cs", 5),
+            Record("P-18", "Nozomi", "cs", 0),
+            Record("P-46", "Roxanne", "bio", 2)};
     sf.insertAll(records);
     sf.printAll();
     cout << "**** TEST: End - insertAll() ****\n" << endl;

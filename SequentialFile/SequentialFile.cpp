@@ -1,66 +1,55 @@
-#include "record.cpp"
+#include "../Util/GlobalConstants.h"
+#include <fstream>
 #include <algorithm>
-#define CAPACITY 5
+using namespace std;
 
-enum IDFile {AUXFILE, DATAFILE};
+enum FileID {AUXFILE, DATAFILE};
 
-class SequentialFile
-{
+template <class Register, class Key>
+class SequentialFile{
 private:
-    string datafile;
-    string auxfile;
+    string dataFilePath;
+    string auxFilePath;
     bool empty;
     int amount_control;
 
-    static void sf_write(int pos, fstream& file, Record& r1, IDFile id){
+    static void writeRegister(int position, fstream& file, Register& record, FileID id){
         if(id == DATAFILE)
-            file.seekp(pos*sizeof(Record) + sizeof(int) + sizeof(char), ios::beg);
+            file.seekp(position * sizeof(Register) + sizeof(int) + sizeof(char), ios::beg);
         else
-            file.seekp(pos*sizeof(Record), ios::beg);
-        file << r1;
+            file.seekp(position * sizeof(Register), ios::beg);
+        file.write((char*)& record, sizeof(Register));
     }
 
-    static void sf_read(int pos, fstream&file, Record& r1, IDFile id){
+    static void readRegister(int position, fstream& file, Register& record, FileID id){
         if(id == DATAFILE)
-            file.seekg(pos*sizeof(Record) + sizeof(int) + sizeof(char), ios::beg);
+            file.seekg(position * sizeof(Register) + sizeof(int) + sizeof(char), ios::beg);
         else
-            file.seekg(pos*sizeof(Record), ios::beg);
-        file >> r1;
+            file.seekg(position * sizeof(Register), ios::beg);
+        file.read((char*)& record, sizeof(Register));
     }
 
-    static int numRecords(fstream& file, IDFile id){
-        if(file.is_open()) {
-            int prev = file.tellp();
-            file.seekp(0, ios::end);
-            int n = (id == DATAFILE) ? ((int) file.tellp() - sizeof(int) - sizeof(char)) / sizeof(Record) :
-                    (int) file.tellp() / sizeof(Record);
-            file.seekp(prev, ios::beg);
+    static int numberOfRecords(fstream& file, FileID id){
+        if(file.is_open()){
+            file.seekg(0, ios::end);
+            int n = (id == DATAFILE) ?
+                    ((int) file.tellg() - sizeof(int) - sizeof(char)) / sizeof(Register) :
+                    (int) file.tellg() / sizeof(Register);
+            file.seekg(0, ios::beg);
             return n;
         }return 0;
     }
 
-    static int numRecords(string filename, IDFile id){
-        ifstream file(filename, ios::binary);
-        if(file.is_open()){
-            file.seekg(0, ios::end);
-            int n = (id == DATAFILE) ? ((int) file.tellg() - sizeof(int) - sizeof(char)) / sizeof(Record) :
-                    (int) file.tellg() / sizeof(Record);
-            file.close();
-            return n;
-        }
-        else return 0;
-    }
-
-    static void initialize_first_values(fstream& file, int first_position, char first_reference){
+    static void writeFirstValues(fstream& file, AddressType positionOfTheFirstRecord, char referenceOfTheFirstRecord){
         file.seekp(0, ios::beg);
-        file.write((char *)&first_position, sizeof(int));
-        file.write((char *)&first_reference, sizeof(char));
+        file.write((char *)& positionOfTheFirstRecord, sizeof(AddressType));
+        file.write((char *)& referenceOfTheFirstRecord, sizeof(char));
     }
 
 public:
-    SequentialFile(string datafile, string auxfile){
-        this->datafile = datafile;
-        this->auxfile = auxfile;
+    SequentialFile(string dataFilePath, string auxFilePath){
+        this->dataFilePath = dataFilePath;
+        this->auxFilePath = auxFilePath;
         amount_control = 0;
         empty = numRecords(this->datafile, DATAFILE) <= 0;
     }

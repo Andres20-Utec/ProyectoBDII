@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include "GlobalConstants.h"
+#include "../Util/GlobalConstants.h"
 using namespace std;
 
 template<class Register>
@@ -32,7 +32,7 @@ private:
     int numberOfRecords(fstream& file){
         if(file.is_open()){
             file.seekg(0, ios::end);
-            int n = ((int) file.tellp() - sizeof(int)) / sizeof(Register);
+            int n = ((int) file.tellg() - sizeof(int)) / sizeof(Register);
             file.seekg(0, ios::beg);
             return n;
         }return 0;

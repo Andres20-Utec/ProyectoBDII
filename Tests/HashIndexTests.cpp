@@ -1,5 +1,5 @@
-#include "../Alumno.h"
-#include "../HashIndex.h"
+#include "../Entities/Alumno.h"
+#include "../Hash/HashIndex.h"
 #include <cstdio>
 using namespace std;
 string indexFilePath = "indexFile.dat";

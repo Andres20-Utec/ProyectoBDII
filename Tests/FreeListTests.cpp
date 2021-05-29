@@ -1,6 +1,6 @@
 #include <iostream>
-#include "../FreeList.h"
-#include "../Alumno.h"
+#include "../Hash/FreeList.h"
+#include "../Entities/Alumno.h"
 using namespace std;
 
 FreeList<Alumno> test("datos1.dat");

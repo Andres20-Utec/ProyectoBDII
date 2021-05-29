@@ -1,4 +1,4 @@
-#include "GlobalConstants.h"
+#include "../Util/GlobalConstants.h"
 #include <functional>
 
 struct HashNode{
