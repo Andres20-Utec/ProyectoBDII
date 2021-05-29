@@ -53,8 +53,6 @@ public:
         vector<Register> records;
         fstream file(this->path.c_str(), ios::binary | ios::in);
         if(file.is_open()) {
-            int header;
-            readHeader(header, file);
             Register record;
             for(int i = 0; i < numberOfRecords(file); ++i){
                 readRegister(record, i, file);
@@ -86,7 +84,6 @@ public:
                 writeRegister(record, recordPosition, file);
             }
             file.close();
-            cout << "Se agrego correctamente - add()" << endl;
             return recordPosition;
         }
         else{
@@ -95,8 +92,6 @@ public:
             int header = -1;
             writeHeader(header, file);
             writeRegister(record, 0, file);
-
-            cout << "Se agrego correctamente - add()" << endl;
             return 0;
         }
     }
@@ -148,7 +143,6 @@ public:
             record.nextDel = header;
             writeRegister(record, position, file);
             file.close();
-            cout << "Se elimino correctamente" << endl;
         }else throw out_of_range("Indice incorrecto");
     }
 };
