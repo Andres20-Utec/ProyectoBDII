@@ -4,7 +4,7 @@
 #include <string.h>
 using namespace std;
 
-class Alumno{
+class Estudiante{
 private:
     char codigo[5];
     char nombre[11];
@@ -16,8 +16,8 @@ private:
 public:
     int nextDel;
     char reference;
-    Alumno() = default;
-    Alumno(string codigo, string nombre, string apellidos, string carrera, int ciclo, float mensualidad){
+    Estudiante() = default;
+    Estudiante(string codigo, string nombre, string apellidos, string carrera, int ciclo, float mensualidad){
         if(codigo.size() > 5 ) codigo = codigo.substr(0, 5);
         if(nombre.size() > 11) nombre = nombre.substr(0, 11);
         if(apellidos.size() > 20) apellidos = apellidos.substr(0, 20);
@@ -38,42 +38,34 @@ public:
         cout << "Ciclo       : " << ciclo << endl;
         cout << "Mensualidad : " << mensualidad << endl;
     }
-    bool operator < (Alumno& other){
-        return strcmp(this->codigo, other.codigo) < 0;
+    bool operator < (Estudiante& other){
+        return strcmp(this->nombre, other.nombre) < 0;
     }
 
-    bool operator == (Alumno& other){
-        return strcmp(this->codigo, other.codigo) == 0;
+    bool operator == (Estudiante& other){
+        return strcmp(this->nombre, other.nombre) == 0;
     }
 
     const char *getPrimaryKey() const {
-        return codigo;
+        return nombre;
     }
     bool equalTo(const char* key){
-        return strcmp(this->codigo, key) == 0;
+        return strcmp(this->nombre, key) == 0;
     }
 
     bool lessThanToKey(const char* key){
-        return strcmp(this->codigo, key) < 0;
+        return strcmp(this->nombre, key) < 0;
     }
 
     bool greatherThanToKey(const char* key){
-        return strcmp(this->codigo, key) > 0;
+        return strcmp(this->nombre, key) > 0;
     }
 
     bool lessThanOrEqualToKey(const char* key){
-        return strcmp(this->codigo, key) <= 0;
+        return strcmp(this->nombre, key) <= 0;
     }
 
     bool greatherThanOrEqualToKey(const char* key){
-        return strcmp(this->codigo, key) >= 0;
-    }
-};
-
-struct AlumnoHash{
-    int operator()(const char* key){
-        string str(key);
-        hash<string> myHash;
-        return myHash(str);
+        return strcmp(this->nombre, key) >= 0;
     }
 };
