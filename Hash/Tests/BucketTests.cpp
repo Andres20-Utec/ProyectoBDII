@@ -10,5 +10,6 @@ int main(){
     test.add(student2);
     test.add(student3);
     test.add(student);
+    test.sortBucket();
     test.printAll(); // en orden
 }
