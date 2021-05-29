@@ -9,7 +9,7 @@ using namespace std;
 template <class Register, class Key, class Hash = hash<Key> > 
 class HashIndex{
 private:
-    typedef Bucket<Register> Bucket;
+    typedef Bucket<Register, Key> Bucket;
     typedef bitset<MAXHEIGHT> bitset;
     FreeList<Bucket> bucketFile;
     FreeList<HashNode> indexFile;
@@ -68,9 +68,9 @@ public:
     }
 
     vector<Register> searchInRange(Key beginKey, Key endKey){
-        int bucketNumber = bucketFile.getNumberOfRecords();
+        int bucketsNumber = bucketFile.getNumberOfRecords();
         vector<Register> output;
-        for(int i = 0; i < bucketNumber; ++i){
+        for(int i = 0; i < bucketsNumber; ++i){
             Bucket bucket = bucketFile.readRecord(i);
             for(auto& r : bucket.getRecords()){
                 if(r.lessThanEqualKey(endKey) && r.greatherThanEqualKey(beginKey))
@@ -187,12 +187,8 @@ public:
     void deleteRecordInBucket(Key key, HashNode &currentNode, AddressType nodePosition) {
         AddressType currentBucketPosition = currentNode.bucketPosition;
         Bucket bucket = bucketFile.readRecord(currentBucketPosition);
-        vector<Register> records;
-        for(auto& record : bucket.getRecords()){
-            if(!record.compareByPrimaryKey(key))
-                records.push_back(record);
-        }
-        bucket.setRecords(records);
+        auto differentRecords = bucket.getAllDifferentRecords(key);
+        bucket.setRecords(differentRecords);
         bucketFile.writeRecord(currentBucketPosition, bucket);
         if(bucket.empty() && bucket.getNextBucket() != -1){
             currentNode.bucketPosition = bucket.getNextBucket();

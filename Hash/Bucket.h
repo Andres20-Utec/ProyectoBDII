@@ -1,6 +1,10 @@
 #include "GlobalConstants.h"
 #include <algorithm>
-template <typename Register>
+#include <vector>
+#include <iostream>
+using namespace std;
+
+template <class Register, class Key>
 class Bucket{
 private:
     Register records[BUCKETSIZE];
@@ -45,9 +49,7 @@ public:
         }
     }
     vector<Register> getRecords(){
-        vector<Register> output;
-        output.insert(output.begin(), records, records+count);
-        return output;
+        return vector<Register>(records, records+count);
     }
 
     void setRecords(vector<Register> newRecords){
@@ -60,5 +62,14 @@ public:
 
     bool empty(){
         return count == 0;
+    }
+
+    vector<Register> getAllDifferentRecords(Key key){
+        vector<Register> output;
+        for(auto& record : this->getRecords()){
+            if(!record.compareByPrimaryKey(key))
+                output.push_back(record);
+        }
+        return output;
     }
 };
