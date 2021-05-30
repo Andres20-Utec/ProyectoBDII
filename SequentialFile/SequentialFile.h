@@ -12,7 +12,6 @@ class SequentialFile{
 private:
     string dataFilePath;
     string auxFilePath;
-    bool empty;
 
     bool check(int position, fstream& file, FileID id){
         file.seekp(0, ios::end);
@@ -88,17 +87,19 @@ private:
         return r1 < r2;
     }
 
+    bool empty(){
+        return recordsNumber(this->dataFilePath, DATAFILE) == 0;
+    }
+
 public:
     SequentialFile(string dataFilePath, string auxFilePath){
         this->dataFilePath = dataFilePath;
         this->auxFilePath = auxFilePath;
-        empty = recordsNumber(this->dataFilePath, DATAFILE) <= 0;
     }
 
     void insertAll(vector<Register> &records){
-        if(this->empty){
+        if(empty()){
             sort(records.begin(), records.end(), compareRecords);
-            empty = false;
             fstream file(this->dataFilePath, ios::binary | ios::out);
             writeFirstValues(file, 0, 'd');
             for (int i = 0; i < records.size(); i++){
@@ -163,7 +164,7 @@ public:
         int recordsQuantity = recordsNumber(file, DATAFILE);
         while(position < recordsQuantity){
             this->readRegister(position, file, record, DATAFILE);
-            if(record.equalTo(key))
+            if(record.equalToKey(key))
                 records.push_back(record);
             else
                 break;
@@ -253,11 +254,10 @@ public:
     }
 
     void add(Register record){
-        if(this->empty){
+        if(empty()){
             fstream file(this->dataFilePath, ios::binary | ios::out);
             writeFirstValues(file, 0, 'd');
             writeRegister(0, file, record, DATAFILE);
-            this->empty = false;
             file.close();
             return;
         }

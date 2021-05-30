@@ -1,104 +1,125 @@
 #include "../SequentialFile/SequentialFile.h"
-#include "../Entities/Estudiante.h"
+#include "../Entities/Universitario.h"
 
-string datafile = "datafile.dat";
-string auxfile = "auxfile.dat";
+string dataFilePath = "datafile.dat";
+string auxFilePath = "auxfile.dat";
 
-SequentialFile<Estudiante, const char*> sf(datafile, auxfile);
+SequentialFile<Universitario, const char*> test(dataFilePath, auxFilePath);
 
-void test_insertAll(){
-    cout << "**** TEST: Start - insertAll()****" << endl;
-    vector<Estudiante> records = {
-            Estudiante("P-11", "Andres", "Galves", "cs", 1, 2000),
-            Estudiante("P-72", "Sagasti", "Gutierres", "cs", 5, 2000),
-            Estudiante("P-33", "Jorge", "Villanueva", "cs", 1, 2300),
-            Estudiante("P-74", "Claudia", "Ramirez", "cs", 5, 1001),
-            Estudiante("P-25", "Gabriela", "Torres", "cs", 1, 2009),
-            Estudiante("P-96", "Carla", "Guerrero", "cs", 5, 2020),
-            Estudiante("P-89", "Zora", "Sobrados", "cs", 0, 4500),
-            Estudiante("P-79", "Talia", "Ayzanoa", "bio", 2, 2190),
-            Estudiante("P-56", "Saori", "Torres", "cs", 4, 5234),
-            Estudiante("P-18", "Nozomi", "Sulca", "cs", 5, 1002),
-            Estudiante("P-46", "Roxanne", "Temoche", "bio", 6, 2000)};
-    sf.insertAll(records);
-    sf.printAll();
-    cout << "**** TEST: End - insertAll() ****\n" << endl;
-}
-
-void test_search(){
-    cout << "**** TEST: Start - search() ****" << endl;
-    string nombre = "Andres";
-    auto records = sf.search(nombre.c_str());
-    cout << "Busqueda de la key >> " << nombre << endl;
-    for(auto record : records){
-        record.showData();
+template <class T>
+void showAll(vector<T> &records){
+    for(auto& r : records){
+        cout << "--------------------------" << endl;
+        r.showData();
     }
-    cout << "**** TEST: End - search() ****\n" << endl;
 }
 
-void test_search_in_range(){
-    cout << "**** TEST: Start - search_in_range() ****" << endl;
-    const char beg[] = "Andres";
-    const char end[] = "Carla";
-    auto records = sf.searchPerRange(beg, end);
-    cout << "Inicio de busqueda >> " << beg << endl;
-    cout << "Final de busqueda  >> " << end << endl;
-    for(auto record : records){
-        record.showData();
-    }
-    cout << "**** TEST: End - search_in_range() ****\n" << endl;
+void deleteFiles(){
+    remove(dataFilePath.c_str());
+    remove(auxFilePath.c_str());
 }
 
-void test_add(){
-    cout << "**** TEST: Start - add() ****" << endl;
+void printTestStart(string s){
+    string txt = "******** Test: " + s + " ********";
+    cout << txt << endl;
+}
+void printTestEnd(){
+    deleteFiles();
+    cout << " ********************************" << endl;
+}
+
+void insertByDefault(){
+    cout << R"(Se inserta >> "Andres", "Sagasti", "Claudia")" << endl;
+    test.add(Universitario("P-11", "Andres", "cs"));
+    test.add(Universitario("P-12", "Sagasti", "cs"));
+    test.add(Universitario("P-13", "Claudia", "cs"));
+}
+
+void insertAllTest(){
+    printTestStart(R"(insertAll("Andres", "Sagasti", "Claudia"))");
+    vector<Universitario> records{
+        Universitario("P-11", "Andres", "cs"),
+        Universitario("P-12", "Sagasti", "cs"),
+        Universitario("P-13", "Claudia", "cs")};
+    test.insertAll(records);
+    test.printAll();
+    printTestEnd();
+}
+
+void addTest(){
+    printTestStart("add()");
+    insertByDefault();
+    test.printAll();
+    printTestEnd();
+}
+
+void searchTest(){
+    printTestStart(R"(search("Andres"))");
+    insertByDefault();
+    insertByDefault();
+    auto records = test.search("Andres");
+    showAll(records);
+    printTestEnd();
+}
+
+void searchPerRange(){
+    printTestStart(R"(searchPerRange("Andres", "Claudia"))");
+    insertByDefault();
+    insertByDefault();
+    auto records = test.searchPerRange("Andres", "Claudia");
+    showAll(records);
+    printTestEnd();
+
+}
+
+void fullAuxFileTest(){
+    printTestStart("auxfile is full");
     cout << "CAPACITY del auxfile >> " << CAPACITY << endl;
-    sf.add(Estudiante("P-18", "Andres", "Galves", "cs", 1, 2000));
-    sf.add(Estudiante("P-11", "Andres", "Galves", "cs", 1, 2000));
-    sf.add(Estudiante("P-11", "Andres", "Galves", "cs", 1, 2000));
-    sf.add(Estudiante("P-11", "Andres", "Galves", "cs", 1, 2000));
-    sf.add(Estudiante("P-11", "Andres", "Galves", "cs", 1, 2000));
-    sf.printAll();
-    cout << "Luego de agregar un nuevo archivo cuando el auxfile está lleno" << endl;
-    sf.add(Estudiante("P-11", "Andres", "Galves", "cs", 1, 2000));
-    sf.printAll();
-    cout << "**** TEST: End - add() ****\n" << endl;
+    for(int i = 1; i <= CAPACITY + 1; ++i){
+        test.add(Universitario("P-18", "Andres", "cs"));
+    }
+    test.printAll();
+    cout << "Luego de agregar un elemento mas, se reconstruye el archivo" << endl;
+    test.add(Universitario("P-18", "Andres", "cs"));
+    test.printAll();
+    printTestEnd();
 }
 
-void test_add2(){
-    cout << "**** TEST: Start - add() 2****" << endl;
-    // ANTES DEL PRIMER REGISTRO DEL DATAFILE
-    vector<Estudiante> records = {
-            Estudiante("P-11", "Ana", "Gutierrez", "cs", 1, 1000),
-            Estudiante("P-72", "Carlos", "Torres", "cs", 5, 2000)};
-    sf.insertAll(records);
-    sf.add(Estudiante("P-18", "Aa", "xd", "cs", 8, 4000));
-    sf.printAll();
-    sf.reBuild();
-    sf.printAll();
-    cout << "**** TEST: End - add() 2****\n" << endl;
+void specialCase(){
+    printTestStart("Agregar un nuevo registro que es menor al primero");
+    vector<Universitario> records = {
+            Universitario("P-11", "Ana", "cs"),
+            Universitario("P-72", "Carlos", "cs")};
+    test.insertAll(records);
+    test.add(Universitario("P-18", "Aa", "cs"));
+    test.printAll();
+    test.reBuild();
+    cout << "Luego de reconstruir el datafile" << endl;
+    test.printAll();
+    printTestEnd();
 }
 
-void test_add3(){
-    cout << "**** TEST: Start - add() 3****" << endl;
-    // DESPUES DEL ULTIMO REGISTRO DEL DATAFILE
-    vector<Estudiante> records = {
-            Estudiante("P-11", "Ana", "Gutierrez", "cs", 1, 4000),
-            Estudiante("P-72", "Carlos", "Galvez", "cs", 5, 2300)};
-    sf.insertAll(records);
-    sf.printAll();
-    sf.add(Estudiante("P-18", "Zz", "XD", "cs", 8, 500));
-    sf.printAll();
-    sf.reBuild();
-    sf.printAll();
-    cout << "**** TEST: End - add() 3****\n" << endl;
+void specialCase2(){
+    printTestStart("Agregar un nuevo registro que es mayor que el ultimo");
+    vector<Universitario> records = {
+            Universitario("P-11", "Ana", "cs"),
+            Universitario("P-72", "Carlos", "cs")};
+    test.insertAll(records);
+    test.add(Universitario("P-18", "Zz", "cs"));
+    test.printAll();
+    test.reBuild();
+    cout << "Luego de reconstruir el archivo" << endl;
+    test.printAll();
+    printTestEnd();
 }
 
 int main(){
-    test_insertAll();
-    test_search();
-    test_search_in_range();
-    test_add();
-    //test_add2();
-    //test_add3();
+    insertAllTest();
+    addTest();
+    searchTest();
+    searchPerRange();
+    fullAuxFileTest();
+    specialCase();
+    specialCase2();
     return 0;
 }
