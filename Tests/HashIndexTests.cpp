@@ -91,18 +91,31 @@ void specialCase(){
     printTestStart(R"(Remover 2 nodos hojas)");
     Alumno student("0002", "Jose", "Del Monte", "Computacion", 5, 2000);
     Alumno student1("0000", "Ricardo", "Del Sol ", "Computacion", 5, 2000);
-    Alumno student2("0001", "Geronimo","Del Aguila", "Bio", 6, 1231);
-
-    for(int i = 0; i < 5; i++){
-        test.insert(student);
-        test.insert(student1);
-    }
-    test.insert(student2);
+    Alumno student2("0006", "Geronimo","Del Aguila", "Bio", 6, 1231);
+    Alumno student3("0008", "Geronimo","Del Aguila", "Bio", 6, 1231);
+    Alumno student4("0014", "Geronimo","Del Aguila", "Bio", 6, 1231);
+    Alumno student5("0010", "Geronimo","Del Aguila", "Bio", 6, 1231);
+    Alumno student6("0011", "Geronimo","Del Aguila", "Bio", 6, 1231);
+    Alumno student7("0009", "Gerundo","Del Aguila", "Bio", 6, 1231);
     
+    test.insert(student);
+    test.insert(student1);
+    test.insert(student2);
+    test.insert(student3);
+    test.insert(student4);
+    test.insert(student5);
+    test.insert(student6);
+    test.insert(student7);
+    test.insert(student7);
+
     test.remove("0002");
     test.remove("0000");
+    test.remove("0006");
+    test.remove("0008");
+    test.remove("0014");
+    test.remove("0010");
     
-    vector<Alumno> output = test.searchInRange("0000", "0002");
+    vector<Alumno> output = test.searchInRange("0000", "0014");
     showAll<Alumno>(output);
     printTestEnd();
 }
