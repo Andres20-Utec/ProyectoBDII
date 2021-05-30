@@ -1,5 +1,7 @@
 #include "../Entities/Alumno.h"
 #include "../Hash/HashIndex.h"
+#include "../Util/GlobalConstants.h"
+#include <functional>
 #include <cstdio>
 using namespace std;
 string indexFilePath = "indexFile.dat";
@@ -89,14 +91,14 @@ void removeTest(){
 
 void specialCase(){
     printTestStart(R"(Remover 2 nodos hojas)");
-    Alumno student("0002", "Jose", "Del Monte", "Computacion", 5, 2000);
-    Alumno student1("0000", "Ricardo", "Del Sol ", "Computacion", 5, 2000);
-    Alumno student2("0006", "Geronimo","Del Aguila", "Bio", 6, 1231);
-    Alumno student3("0008", "Geronimo","Del Aguila", "Bio", 6, 1231);
-    Alumno student4("0014", "Geronimo","Del Aguila", "Bio", 6, 1231);
-    Alumno student5("0010", "Geronimo","Del Aguila", "Bio", 6, 1231);
-    Alumno student6("0011", "Geronimo","Del Aguila", "Bio", 6, 1231);
-    Alumno student7("0009", "Gerundo","Del Aguila", "Bio", 6, 1231);
+    Alumno student("0000", "Jose", "Del Monte", "Computacion", 5, 2000);
+    Alumno student1("0001", "Ricardo", "Del Sol ", "Computacion", 5, 2000);
+    Alumno student2("0003", "Geronimo","Del Aguila", "Bio", 6, 1231);
+    Alumno student3("0009", "Geronimo","Del Aguila", "Bio", 6, 1231);
+    Alumno student4("0010", "Geronimo","Del Aguila", "Bio", 6, 1231);
+    Alumno student5("0012", "Geronimo","Del Aguila", "Bio", 6, 1231);
+    Alumno student6("0013", "Geronimo","Del Aguila", "Bio", 6, 1231);
+    Alumno student7("0014", "Gerundo","Del Aguila", "Bio", 6, 1231);
     
     test.insert(student);
     test.insert(student1);
@@ -108,16 +110,25 @@ void specialCase(){
     test.insert(student7);
     test.insert(student7);
 
-    test.remove("0002");
     test.remove("0000");
-    test.remove("0006");
-    test.remove("0008");
-    test.remove("0014");
+    test.remove("0001");
+    test.remove("0003");
+    test.remove("0009");
     test.remove("0010");
+    test.remove("0014");
     
     vector<Alumno> output = test.searchInRange("0000", "0014");
     showAll<Alumno>(output);
     printTestEnd();
+    // struct AlumnoHash myHash;
+    // cout << bitset<MAXHEIGHT>(myHash("0000"))<< endl;
+    // cout << bitset<MAXHEIGHT>(myHash("0001"))<< endl;
+    // cout << bitset<MAXHEIGHT>(myHash("0003"))<< endl;
+    // cout << bitset<MAXHEIGHT>(myHash("0009"))<< endl;
+    // cout << bitset<MAXHEIGHT>(myHash("0010"))<< endl;
+    // cout << bitset<MAXHEIGHT>(myHash("0012"))<< endl;
+    // cout << bitset<MAXHEIGHT>(myHash("0013"))<< endl;
+    // cout << bitset<MAXHEIGHT>(myHash("0014"))<< endl;
 }
 
 int main(){
