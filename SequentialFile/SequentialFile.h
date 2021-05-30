@@ -14,7 +14,20 @@ private:
     string auxFilePath;
     bool empty;
 
+    bool check(int position, fstream& file, FileID id){
+        file.seekp(0, ios::end);
+        int n = (id == DATAFILE) ?
+                ((int) file.tellp() - sizeof(int) - sizeof(char)) / sizeof(Register) :
+                (int) file.tellp() / sizeof(Register);
+        file.seekg(0, ios::beg);
+        return  0 <= position && position <= n;
+    }
+
     void writeRegister(int position, fstream& file, Register& record, FileID id){
+        if(!check(position, file, id)){
+            cout << "INVALIDO" << endl;
+        }
+
         if(id == DATAFILE)
             file.seekp(position * sizeof(Register) + sizeof(int) + sizeof(char), ios::beg);
         else
@@ -41,6 +54,17 @@ private:
         }return 0;
     }
 
+    int recordsNumber_(fstream& file, FileID id){
+        if(file.is_open()){
+            file.seekp(0, ios::end);
+            int n = (id == DATAFILE) ?
+                    ((int) file.tellp() - sizeof(int) - sizeof(char)) / sizeof(Register) :
+                    (int) file.tellp() / sizeof(Register);
+            file.seekp(0, ios::beg);
+            return n;
+        }return 0;
+    }
+
     int recordsNumber(string filename, FileID id){
         fstream file(filename, ios::binary | ios::in);
         auto result = recordsNumber(file, id);
@@ -54,8 +78,8 @@ private:
         file.write((char *)& referenceOfTheFirstRecord, sizeof(char));
     }
 
-    void readFirstValues(fstream& file, AddressType positionOfTheFirstRecord, char referenceOfTheFirstRecord){
-        file.seekp(0, ios::beg);
+    void readFirstValues(fstream& file, AddressType& positionOfTheFirstRecord, char& referenceOfTheFirstRecord){
+        file.seekg(0, ios::beg);
         file.read((char *)& positionOfTheFirstRecord, sizeof(AddressType));
         file.read((char *)& referenceOfTheFirstRecord, sizeof(char));
     }
@@ -79,6 +103,7 @@ public:
             writeFirstValues(file, 0, 'd');
             for (int i = 0; i < records.size(); i++){
                 records[i].nextDel = i + 1;
+                records[i].reference = 'd';
                 writeRegister(i, file, records[i], DATAFILE);
             }
             file.close();
@@ -97,7 +122,7 @@ public:
             mid = (high + low) / 2;
             Register record;
             this->readRegister(mid, file, record, DATAFILE);
-            if (record.greatherThanToKey(searchKey)){
+            if (!record.lessThanToKey(searchKey)){
                 high = mid;
             }
             else{
@@ -117,7 +142,7 @@ public:
             mid = (high + low) / 2;
             Register record;
             this->readRegister(mid, file, record, DATAFILE);
-            if(record.lessThanToKey(searchKey)){
+            if(!record.greaterThanToKey(searchKey)){
                 low = mid + 1;
             }
             else{
@@ -166,9 +191,9 @@ public:
     vector<Register> getSortedRecords(){
         int recordsNumberDatafile = recordsNumber(this->dataFilePath, DATAFILE);
         int recordsNumberAuxfile = recordsNumber(this->auxFilePath, AUXFILE);
-        fstream auxFile(this->dataFilePath, ios::binary| ios::in | ios::out);
-        fstream dataFile(this->auxFilePath, ios::binary | ios::in | ios::out);
-        AddressType positionOfTheFirstRecord;
+        fstream dataFile(this->dataFilePath, ios::binary | ios::in | ios::out);
+        fstream auxFile(this->auxFilePath, ios::binary| ios::in | ios::out);
+        int positionOfTheFirstRecord;
         char currentReference;
         char nextReference;
         readFirstValues(dataFile, positionOfTheFirstRecord, currentReference);
@@ -237,7 +262,7 @@ public:
             return;
         }
         isFull();
-        fstream auxFile(this->auxFilePath, ios::binary | ios::out);
+        fstream auxFile(this->auxFilePath, ios::binary | ios::out | ios::app);
         fstream dataFile(this->dataFilePath, ios::binary | ios::in | ios::out);
         int positionOfTheFirstRecord;
         char referenceOfTheFirstRecord;
@@ -246,17 +271,18 @@ public:
         if(position == -1){
             record.nextDel = positionOfTheFirstRecord;
             record.reference = referenceOfTheFirstRecord;
-            writeFirstValues(dataFile, recordsNumber(auxFile, AUXFILE), 'a');
+            writeFirstValues(dataFile, recordsNumber(this->auxFilePath, AUXFILE), 'a');
         }else {
             Register r1;
             readRegister(position, dataFile, r1, DATAFILE);
             record.nextDel = r1.nextDel;
             record.reference = r1.reference;
-            r1.nextDel = recordsNumber(auxFile, AUXFILE);
+            r1.nextDel = recordsNumber(this->auxFilePath, AUXFILE);
             r1.reference = 'a';
             writeRegister(position, dataFile, r1, DATAFILE);
         }
-        writeRegister(position, auxFile, record, AUXFILE);
+        //writeRegister(recordsNumber(this->auxFilePath, AUXFILE), auxFile, record, AUXFILE);
+        auxFile.write((char*)& record, sizeof(Register));
         auxFile.close();
         dataFile.close();
     }

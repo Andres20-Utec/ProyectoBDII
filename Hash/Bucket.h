@@ -67,7 +67,7 @@ public:
     vector<Register> getAllDifferentRecords(Key key){
         vector<Register> output;
         for(auto& record : this->getRecords()){
-            if(!record.compareByPrimaryKey(key))
+            if(!record.equalToKey(key))
                 output.push_back(record);
         }
         return output;

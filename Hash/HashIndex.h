@@ -59,7 +59,7 @@ public:
         while(currentBucketPosition != -1){
             Bucket bucket = bucketFile.readRecord(currentBucketPosition);
             for(auto& r: bucket.getRecords()){
-                if(r.compareByPrimaryKey(searchKey))
+                if(r.equalToKey(searchKey))
                     output.push_back(r);
             }
             currentBucketPosition = bucket.getNextBucket();
@@ -73,7 +73,7 @@ public:
         for(int i = 0; i < bucketsNumber; ++i){
             Bucket bucket = bucketFile.readRecord(i);
             for(auto& r : bucket.getRecords()){
-                if(r.lessThanEqualKey(endKey) && r.greatherThanEqualKey(beginKey))
+                if(r.lessThanOrEqualToKey(endKey) && r.greaterThanOrEqualToKey(beginKey))
                     output.push_back(r);
             }
         }

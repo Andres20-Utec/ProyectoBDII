@@ -49,7 +49,7 @@ public:
     const char *getPrimaryKey() const {
         return codigo;
     }
-    bool equalTo(const char* key){
+    bool equalToKey(const char* key){
         return strcmp(this->codigo, key) == 0;
     }
 
@@ -57,7 +57,7 @@ public:
         return strcmp(this->codigo, key) < 0;
     }
 
-    bool greatherThanToKey(const char* key){
+    bool greaterThanToKey(const char* key){
         return strcmp(this->codigo, key) > 0;
     }
 
@@ -65,7 +65,7 @@ public:
         return strcmp(this->codigo, key) <= 0;
     }
 
-    bool greatherThanOrEqualToKey(const char* key){
+    bool greaterThanOrEqualToKey(const char* key){
         return strcmp(this->codigo, key) >= 0;
     }
 };
