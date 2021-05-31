@@ -114,10 +114,103 @@ void MainWindow::on_pushButton_INSERT_clicked()
 
 void MainWindow::on_pushButton_SEARCH_clicked()
 {
+    HashController hashController;
+    QString inputCodigo = QInputDialog::getText(this,"CODIGO","Ingrese su codigo: ");
+    ui->outputCodigo->setText(inputCodigo);
+    std::string utf8_inputCodigo = inputCodigo.toUtf8().constData();
+    auto result = hashController.searchTest(utf8_inputCodigo);
+
+    int ix=0;
+    while (ix != (int)result.size()){
+        csvModel->setRowCount(ix);
+        auto line = result[ix];
+
+        vector<QString> values;
+
+        QString Q_codigo = QString::fromStdString(line.getCodigo());
+        QString Q_nombre = QString::fromStdString(line.getNombre());
+        QString Q_apellidos = QString::fromStdString(line.getApellidos());
+        QString Q_carrera = QString::fromStdString(line.getCarrera());
+        QString Q_ciclo = QString::fromStdString(to_string(line.getCiclo()));
+        QString Q_mensualidad = QString::fromStdString(to_string(line.getMensualidad()));
+
+        values.push_back(Q_codigo);
+        values.push_back(Q_nombre);
+        values.push_back(Q_apellidos);
+        values.push_back(Q_carrera);
+        values.push_back(Q_ciclo);
+        values.push_back(Q_mensualidad);
+
+        const int colCount = values.size();
+        csvModel->setColumnCount(colCount);
+        for(int jx=0; jx < colCount;++jx){
+            //if(ix==-1){
+                //csvModel->setHeaderData(jx, Qt::Horizontal, values.at(jx));
+            //}
+            setValueAt(ix, jx, values.at(jx));
+        }
+        ix++;
+
+        for(int i=0; i<colCount;++i){
+            values.pop_back();
+        }
+
+    }
 
 }
 
 void MainWindow::on_pushButton_DELETE_clicked()
 {
+    HashController hashController;
+    QString inputCodigo = QInputDialog::getText(this,"CODIGO","Ingrese su codigo: ");
+    std::string utf8_inputCodigo = inputCodigo.toUtf8().constData();
+    hashController.deleteTest(utf8_inputCodigo);
+    MainWindow::on_pushButton_ACTUALIZAR_clicked();
+}
 
+void MainWindow::on_pushButton_SEARCH_RANGE_clicked()
+{
+    HashController hashController;
+    QString beg_inputCodigo = QInputDialog::getText(this,"CODIGO","Ingrese su codigo inicial: ");
+    std::string utf8_beg_inputCodigo = beg_inputCodigo.toUtf8().constData();
+    QString end_inputCodigo = QInputDialog::getText(this,"CODIGO","Ingrese su codigo final: ");
+    std::string utf8_end_inputCodigo = end_inputCodigo.toUtf8().constData();
+    auto result = hashController.searchPerRangeTest(utf8_beg_inputCodigo, utf8_end_inputCodigo);
+
+    int ix=0;
+    while (ix != (int)result.size()){
+        csvModel->setRowCount(ix);
+        auto line = result[ix];
+
+        vector<QString> values;
+
+        QString Q_codigo = QString::fromStdString(line.getCodigo());
+        QString Q_nombre = QString::fromStdString(line.getNombre());
+        QString Q_apellidos = QString::fromStdString(line.getApellidos());
+        QString Q_carrera = QString::fromStdString(line.getCarrera());
+        QString Q_ciclo = QString::fromStdString(to_string(line.getCiclo()));
+        QString Q_mensualidad = QString::fromStdString(to_string(line.getMensualidad()));
+
+        values.push_back(Q_codigo);
+        values.push_back(Q_nombre);
+        values.push_back(Q_apellidos);
+        values.push_back(Q_carrera);
+        values.push_back(Q_ciclo);
+        values.push_back(Q_mensualidad);
+
+        const int colCount = values.size();
+        csvModel->setColumnCount(colCount);
+        for(int jx=0; jx < colCount;++jx){
+            //if(ix==-1){
+                //csvModel->setHeaderData(jx, Qt::Horizontal, values.at(jx));
+            //}
+            setValueAt(ix, jx, values.at(jx));
+        }
+        ix++;
+
+        for(int i=0; i<colCount;++i){
+            values.pop_back();
+        }
+
+    }
 }

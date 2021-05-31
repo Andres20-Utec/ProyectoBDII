@@ -154,6 +154,19 @@
      <string>Mensualidad</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton_SEARCH_RANGE">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>30</y>
+      <width>141</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>SEARCH_RANGE</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

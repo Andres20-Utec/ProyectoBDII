@@ -26,6 +26,8 @@ private slots:
 
     void on_pushButton_ACTUALIZAR_clicked();
 
+    void on_pushButton_SEARCH_RANGE_clicked();
+
 private:
     Ui::MainWindow *ui;
     void setValueAt(int ix, int jx, const QString &value);
