@@ -19,7 +19,7 @@ void deleteFiles(){
     remove(auxFilePath.c_str());
 }
 
-void printTestStart(string s){
+void printTestStart(const string& s){
     string txt = "******** Test: " + s + " ********";
     cout << txt << endl;
 }
@@ -62,14 +62,30 @@ void searchTest(){
     printTestEnd();
 }
 
-void searchPerRange(){
+void searchPerRangeTest(){
     printTestStart(R"(searchPerRange("Andres", "Claudia"))");
     insertByDefault();
     insertByDefault();
     auto records = test.searchPerRange("Andres", "Claudia");
     showAll(records);
     printTestEnd();
+}
 
+void searchPerRange2Test(){
+    printTestStart(R"(Caso 2: searchPerRange("Andres, "Sagasti"))");
+    cout << R"(Se inserta >> "Andres", "Sagasti", "Claudia" con insertAll())" << endl;
+    vector<Universitario> records{
+            Universitario("P-11", "Andres", "cs"),
+            Universitario("P-12", "Sagasti", "cs"),
+            Universitario("P-13", "Claudia", "cs")};
+    test.insertAll(records);
+    cout << R"(Se inserta "Andres"*3)" << endl;
+    for(int i = 1; i <= 3; ++i){
+        test.add(Universitario("P-18", "Andres", "cs"));
+    }
+    auto out = test.searchPerRange("Andres", "Sagasti");
+    showAll(out);
+    printTestEnd();
 }
 
 void fullAuxFileTest(){
@@ -113,13 +129,55 @@ void specialCase2(){
     printTestEnd();
 }
 
-int main(){
+void remove1Test(){
+    printTestStart(R"(remove("Andres, "Claudia"))");
+    insertByDefault();
+    test.printAll();
+    test.removeRecord("Andres");
+    test.removeRecord("Claudia");
+    cout << "Luego de remover" << endl;
+    test.printAll();
+    test.reBuild();
+    cout << "Se reconstruye el archivo" << endl;
+    test.printAll();
+    printTestEnd();
+}
+
+void remove2Test(){
+    printTestStart(R"(remove("Andres", "Sagasti", "Claudia"))");
+    insertByDefault();
+    test.printAll();
+    test.removeRecord("Andres");
+    test.removeRecord("Sagasti");
+    test.removeRecord("Claudia");
+    cout << "Luego de remover todo" << endl;
+    test.printAll();
+    insertByDefault();
+    test.printAll();
+    test.reBuild();
+    cout << "Se reconstruye el archivo" << endl;
+    test.printAll();
+    printTestEnd();
+}
+
+void testsWithoutDeleting(){
     insertAllTest();
     addTest();
     searchTest();
-    searchPerRange();
+    searchPerRangeTest();
+    searchPerRange2Test();
     fullAuxFileTest();
     specialCase();
     specialCase2();
+}
+
+void testsWithDeleting(){
+    remove1Test();
+    remove2Test();
+}
+int main(){
+    testsWithoutDeleting();
+    cout << "\n\n\t ********** REMOVE TESTS ********** \n\n" << endl;
+    testsWithDeleting();
     return 0;
 }
