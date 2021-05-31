@@ -38,7 +38,7 @@ void insertByDefault(){
 }
 
 void insertAllTest(){
-    printTestStart(R"(insertAll("Andres", "Sagasti", "Claudia"))");
+    printTestStart(R"(insertAll())");
     vector<Universitario> records{
             Universitario("P-11", "Andres", "cs"),
             Universitario("P-12", "Sagasti", "cs"),
@@ -170,7 +170,7 @@ void remove2Test(){
 }
 
 void remove3Test(){
-    printTestStart(R"(insertAll("Andres", "Sagasti", "Claudia"))");
+    printTestStart(R"(insertAll())");
     vector<Universitario> records{
             Universitario("P-11", "Andres", "cs"),
             Universitario("P-12", "Sagasti", "cs"),
