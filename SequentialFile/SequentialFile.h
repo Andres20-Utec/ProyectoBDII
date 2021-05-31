@@ -263,6 +263,7 @@ public:
                 break;
             ++position;
         }
+        return records;
     }
 
     vector<Register> searchPerRange(Key startKey, Key endKey){

@@ -8,10 +8,12 @@ SequentialFile<Universitario, const char*> test(dataFilePath, auxFilePath);
 
 template <class T>
 void showAll(vector<T> &records){
+    cout << "ANTES DE IMPRIMIR " << endl;
     for(auto& r : records){
         cout << "--------------------------" << endl;
         r.showData();
     }
+    cout << "Luego de imprimir" << endl;
 }
 
 void deleteFiles(){
@@ -38,9 +40,16 @@ void insertByDefault(){
 void insertAllTest(){
     printTestStart(R"(insertAll("Andres", "Sagasti", "Claudia"))");
     vector<Universitario> records{
-        Universitario("P-11", "Andres", "cs"),
-        Universitario("P-12", "Sagasti", "cs"),
-        Universitario("P-13", "Claudia", "cs")};
+            Universitario("P-11", "Andres", "cs"),
+            Universitario("P-12", "Sagasti", "cs"),
+            Universitario("P-13", "Claudia", "cs"),
+            Universitario("P-42","Daniela","cs"),
+            Universitario("P-51","Rosario", "bio"),
+            Universitario("P-23","Johana","bio"),
+            Universitario("P-78", "Osman", "bio"),
+            Universitario("P-32","Jorge", "bio"),
+            Universitario("P-26", "Gerson", "cs"),
+            Universitario("P-39", "Gabriela", "cs")};
     test.insertAll(records);
     test.printAll();
     printTestEnd();
@@ -176,8 +185,10 @@ void testsWithDeleting(){
     remove2Test();
 }
 int main(){
+    insertAllTest();
+    /*
     testsWithoutDeleting();
     cout << "\n\n\t ********** REMOVE TESTS ********** \n\n" << endl;
-    testsWithDeleting();
+    testsWithDeleting();*/
     return 0;
 }
