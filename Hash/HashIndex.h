@@ -81,6 +81,19 @@ public:
         return output;
     }
 
+    vector<Register> returnAllRecord(){
+        int bucketsNumber = bucketFile.getNumberOfRecords();
+        vector<Register> output;
+        for(int i = 0; i < bucketsNumber; i++){
+            Bucket bucket = bucketFile.readRecord(i);
+            for(auto& r : bucket.getRecords()){
+                output.push_back(r);
+            }
+        }
+        sort(output.begin(), output.end(), Bucket::compareRecords);
+        return output;
+    }
+
     void insert(Register record){
         if(bucketFile.getNumberOfRecords() == 0)
             initializeFirstValues();
