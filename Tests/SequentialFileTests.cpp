@@ -169,6 +169,37 @@ void remove2Test(){
     printTestEnd();
 }
 
+void remove3Test(){
+    printTestStart(R"(insertAll("Andres", "Sagasti", "Claudia"))");
+    vector<Universitario> records{
+            Universitario("P-11", "Andres", "cs"),
+            Universitario("P-12", "Sagasti", "cs"),
+            Universitario("P-13", "Claudia", "cs"),
+            Universitario("P-42","Daniela","cs"),
+            Universitario("P-51","Pedro", "bio"),
+            Universitario("P-23","Johana","bio"),
+            Universitario("P-78", "Osman", "bio"),
+            Universitario("P-32","Jorge", "bio"),
+            Universitario("P-26", "Gerson", "cs"),
+            Universitario("P-39", "Gabriela", "cs")};
+    test.insertAll(records);
+    cout << "INICIO" << endl;
+    test.printAll();
+    test.removeRecord("Pedro");
+    cout << "Luego remuevo Pedro" << endl;
+    test.printAll();
+    test.add(Universitario("P-51","Pedro", "bio"));
+    cout << "Luego insert Pedro" << endl;
+    test.printAll();
+    test.removeRecord("Pedro");
+    cout << "Luego remuevo Pedro" << endl;
+    test.printAll();
+    test.reBuild();
+    cout << "Luego reconstruyo el archivo" << endl;
+    test.printAll();
+    printTestEnd();
+}
+
 void testsWithoutDeleting(){
     insertAllTest();
     addTest();
@@ -183,12 +214,15 @@ void testsWithoutDeleting(){
 void testsWithDeleting(){
     remove1Test();
     remove2Test();
+    remove3Test();
 }
-int main(){
-    insertAllTest();
-    /*
+
+void executeAllTests(){
     testsWithoutDeleting();
     cout << "\n\n\t ********** REMOVE TESTS ********** \n\n" << endl;
-    testsWithDeleting();*/
+    testsWithDeleting();
+}
+int main(){
+    executeAllTests();
     return 0;
 }
