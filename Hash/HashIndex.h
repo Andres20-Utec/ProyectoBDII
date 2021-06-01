@@ -9,17 +9,20 @@ using namespace std;
 template <class Register, class Key, class Hash = hash<Key> > 
 class HashIndex{
 private:
+    int MAXHEIGHT;
     typedef Bucket<Register, Key> Bucket;
-    typedef bitset<MAXHEIGHT> bitset;
+    typedef bitset<LIMIT> bitset;
     FreeList<Bucket> bucketFile;
     FreeList<HashNode> indexFile;
     Hash myHash;
-    
+
 public:
     HashIndex()= default;
-    HashIndex(const string& indexFilePath, const string& bucketFilePath){
+    HashIndex(const string& indexFilePath, const string& bucketFilePath, int MAXHEIGHT_ = 3){
         this->bucketFile.setPath(bucketFilePath);
         this->indexFile.setPath(indexFilePath);
+        if(MAXHEIGHT_ > LIMIT - 1) throw invalid_argument("Invalid MAXHEIGHT, must to be < " + to_string(LIMIT));
+        this->MAXHEIGHT = MAXHEIGHT_;
     }
     void initializeFirstValues(){
         HashNode root(1, 2), v1(0), v2(1);
@@ -196,5 +199,9 @@ public:
             indexFile.writeRecord(nodePosition, currentNode);
             deleteRecordInBucket(key, currentNode, nodePosition);
         }
+    }
+
+    int getMaxHeight(){
+        return MAXHEIGHT;
     }
 };
