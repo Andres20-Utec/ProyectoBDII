@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -7,7 +8,7 @@ using namespace std;
 class Universitario{
 private:
     char codigo[5];
-    char nombre[11];
+    char nombre[15];
     char carrera[15];
 
 public:
@@ -58,5 +59,31 @@ public:
 
     bool greaterThanOrEqualToKey(const char* key){
         return strcmp(this->nombre, key) >= 0;
+    }
+    void setCodigo(string codigo){
+        strcpy(this->codigo, codigo.c_str());
+    }
+
+    void setNombre(string nombre){
+        strcpy(this->nombre, nombre.c_str());
+    }
+    
+    void setCarrera(string carrera){
+        strcpy(this->carrera, carrera.c_str());
+    }
+
+    const char* getNombre(){
+        return this->nombre;
+    }
+    const char* getCodigo(){
+        return this->codigo;
+    }
+};
+
+struct UniversitarioHash{
+    int operator()(const char* key){
+        string str(key);
+        hash<string> myHash;
+        return myHash(str);
     }
 };

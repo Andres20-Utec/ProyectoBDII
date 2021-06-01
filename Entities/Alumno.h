@@ -68,6 +68,55 @@ public:
     bool greaterThanOrEqualToKey(const char* key){
         return strcmp(this->codigo, key) >= 0;
     }
+
+    string getCodigo()const {
+            return this->codigo;
+    }
+
+    string getNombre()const {
+            return this->nombre;
+    }
+
+    string getApellidos()const {
+            return this->apellidos;
+    }
+
+    string getCarrera()const {
+            return this->carrera;
+    }
+
+    int getCiclo()const {
+            return this->ciclo;
+    }
+
+    float getMensualidad()const {
+            return this->mensualidad;
+    }
+
+    void setCodigo(string codigo){
+        strcmp(this->codigo, codigo.c_str());
+    }
+
+    void setNombre(string nombre){
+        strcmp(this->codigo, nombre.c_str());
+    }
+
+    void setApellidos(string apellido){
+        strcmp(this->apellidos, apellido.c_str());
+    }
+
+    void setCarrera(string carrera){
+        strcmp(this->carrera, carrera.c_str());
+    }
+
+    void setCiclo(string ciclo){
+        this->ciclo = stoi(ciclo);
+    }
+
+    void setMensualidad(string mensualidad){
+        this->mensualidad = stof(mensualidad);
+    }
+
 };
 
 struct AlumnoHash{
