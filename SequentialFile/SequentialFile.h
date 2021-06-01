@@ -25,6 +25,7 @@ private:
     };
     string dataFilePath;
     string auxFilePath;
+    int CAPACITY;
 
     void writeRegister(int position, fstream& file, Register& record, FileID id){
         if(!file.is_open()) throw out_of_range("writeRegister() - Archivo no abierto");
@@ -131,9 +132,10 @@ private:
     }
 
 public:
-    SequentialFile(string dataFilePath, string auxFilePath){
+    SequentialFile(string dataFilePath, string auxFilePath, int CAPACITY = 5){
         this->dataFilePath = dataFilePath;
         this->auxFilePath = auxFilePath;
+        this->CAPACITY = CAPACITY;
     }
 
     void insertAll(vector<Register> &records){
@@ -365,7 +367,7 @@ public:
 
     void isFull(){
         int amountOfRecords = recordsNumber(this->auxFilePath, AUXFILE);
-        if (amountOfRecords == CAPACITY)
+        if (amountOfRecords >= CAPACITY)
             reBuild();
     }
 
@@ -520,5 +522,12 @@ public:
         cout << ">>>>>>>>>>>>>>>>>>>>>>>" << endl;
         dataFile.close();
         auxFile.close();
+    }
+
+    int getCapacity(){
+        return this->CAPACITY;
+    }
+    void setCapacity(int CAPACITY_){
+        this->CAPACITY = CAPACITY_;
     }
 };
