@@ -439,18 +439,14 @@ public:
             record.nextDel = positionOfTheFirstRecord;
             record.reference = referenceOfTheFirstRecord;
         }else{
-            Register currentRecord = searchResult.second.record;
-            record.nextDel = currentRecord.nextDel;
-            record.reference = currentRecord.reference;
-            currentRecord.nextDel = recordsNumber(auxFilePath, AUXFILE);
-            currentRecord.reference = 'a';
-            if(currentReference == INVALID) {
-                int prevPosition = searchResult.first.position;
-                currentPosition = prevPosition;
-                currentReference = prevReference;
-            }
-            if(currentReference == 'd') writeRegister(currentPosition, dataFile, currentRecord, DATAFILE);
-            else if(currentReference == 'a') writeRegister(currentPosition, auxFile, currentRecord, AUXFILE);
+            Register prevRecord = searchResult.first.record;
+            int prevPosition = searchResult.first.position;
+            record.nextDel = prevRecord.nextDel;
+            record.reference = prevRecord.reference;
+            prevRecord.nextDel = recordsNumber(auxFilePath, AUXFILE);
+            prevRecord.reference = 'a';
+            if(prevReference == 'd') writeRegister(prevPosition, dataFile, prevRecord, DATAFILE);
+            else if(prevReference == 'a') writeRegister(prevPosition, auxFile, prevRecord, AUXFILE);
             else throw invalid_argument("removeWithSequentialSearch() - reference invalido");
         }
         auxFile.close();
@@ -496,7 +492,7 @@ public:
         writeDeletedRegistersStatus(dataFile, true);
     }
 
-    void printAll(){
+    void printAll(bool acceptDeletions = false){
         fstream dataFile(this->dataFilePath, ios::binary | ios::in);
         fstream auxFile(this->auxFilePath, ios::binary | ios::in);
         cout << "Data file: " << endl;
@@ -507,7 +503,7 @@ public:
         while (i < recordsNumberDatafile){
             readRegister(i, dataFile, r, DATAFILE);
             ++i;
-            if(r.nextDel == -1) continue;
+            if(!acceptDeletions && r.nextDel == -1) continue;
             cout << "******************************" << endl;
             r.showData();
         }
@@ -517,7 +513,7 @@ public:
         while (i < recordsNumberAuxfile){
             readRegister(i, auxFile, r, AUXFILE);
             ++i;
-            if(r.nextDel == -1) continue;
+            if(!acceptDeletions && r.nextDel == -1) continue;
             cout << "******************************" << endl;
             r.showData();
         }

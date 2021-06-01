@@ -4,8 +4,8 @@
 #include "SequentialFile.h"
 #include "Universitario.h"
 
-string dataFilePath = "/Users/andresriveros/Desktop/qtsequentialfile/datafile.dat";
-string auxFilePath = "/Users/andresriveros/Desktop/qtsequentialfile/auxfile.dat";
+string dataFilePath = "/Users/andresriveros/Documents/GitHub/SequentialFile/qt/qtSequentiaFile/datafile.dat";
+string auxFilePath = "/Users/andresriveros/Documents/GitHub/SequentialFile/qt/qtSequentiaFile/auxfile.dat";
 
 SequentialFile<Universitario, const char*> test(dataFilePath, auxFilePath);
 class SequentialController{
