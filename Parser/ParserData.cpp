@@ -90,7 +90,7 @@ void TESTALL(){
   vector<string> files = {"../csv/Dataset/1k.csv","../csv/Dataset/5k.csv","../csv/Dataset/10k.csv",
                           "../csv/Dataset/50k.csv","../csv/Dataset/100k.csv"};
   vector<string> amount = {"1k", "5k", "10k", "50k", "100k"};
-  vector<int> capacity = {5, 20, 100, 300, 500};
+  vector<int> capacity = {50, 250, 500, 2500, 5000};
   vector<int> height = {8, 10, 11, 14, 15};
   for(int i = 0; i < files.size(); i++){
     cout <<"-------------------------------------------" << endl;

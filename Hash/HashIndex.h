@@ -10,9 +10,9 @@ template <class Register, class Key, class Hash = hash<Key> >
 class HashIndex{
 private:
     int MAXHEIGHT;
-    typedef Bucket<Register, Key> Bucket;
-    typedef bitset<LIMIT> bitset;
-    FreeList<Bucket> bucketFile;
+    typedef Bucket<Register, Key> myBucket;
+    typedef bitset<LIMIT> myBitset;
+    FreeList<myBucket> bucketFile;
     FreeList<HashNode> indexFile;
     Hash myHash;
 
@@ -26,7 +26,7 @@ public:
     }
     void initializeFirstValues(){
         HashNode root(1, 2), v1(0), v2(1);
-        Bucket b1, b2;
+        myBucket b1, b2;
         this->bucketFile.add(b1);
         this->bucketFile.add(b2);
         this->indexFile.add(root);
@@ -43,7 +43,7 @@ public:
         }
     }
 
-    AddressType searchNode(AddressType nodePosition, bitset key, int& height){
+    AddressType searchNode(AddressType nodePosition, myBitset key, int& height){
         HashNode node = indexFile.readRecord(nodePosition);
         if(node.isLeaf)
             return nodePosition;
@@ -53,14 +53,14 @@ public:
         }
     }
     vector<Register> search(Key searchKey){
-        bitset hashKey = myHash(searchKey);
+        myBitset hashKey = myHash(searchKey);
         int height = 0;
         AddressType currentNodePosition = searchNode(ROOT, hashKey, height);
         HashNode currentNode = indexFile.readRecord(currentNodePosition);
         AddressType currentBucketPosition = currentNode.getBucketPosition();
         vector<Register> output;
         while(currentBucketPosition != -1){
-            Bucket bucket = bucketFile.readRecord(currentBucketPosition);
+            myBucket bucket = bucketFile.readRecord(currentBucketPosition);
             for(auto& r: bucket.getRecords()){
                 if(r.equalToKey(searchKey))
                     output.push_back(r);
@@ -74,13 +74,13 @@ public:
         int bucketsNumber = bucketFile.getNumberOfRecords();
         vector<Register> output;
         for(int i = 0; i < bucketsNumber; ++i){
-            Bucket bucket = bucketFile.readRecord(i);
+            myBucket bucket = bucketFile.readRecord(i);
             for(auto& r : bucket.getRecords()){
                 if(r.lessThanOrEqualToKey(endKey) && r.greaterThanOrEqualToKey(beginKey))
                     output.push_back(r);
             }
         }
-        sort(output.begin(), output.end(), Bucket::compareRecords);
+        sort(output.begin(), output.end(), myBucket::compareRecords);
         return output;
     }
 
@@ -88,11 +88,11 @@ public:
         if(bucketFile.getNumberOfRecords() == 0)
             initializeFirstValues();
         int height = 0;
-        bitset hashKey = myHash(record.getPrimaryKey());
+        myBitset hashKey = myHash(record.getPrimaryKey());
         AddressType currentNodePosition = searchNode(ROOT, hashKey, height);
         HashNode currentNode = indexFile.readRecord(currentNodePosition);
         AddressType currentBucketPosition = currentNode.getBucketPosition();
-        Bucket bucket = bucketFile.readRecord(currentBucketPosition);
+        myBucket bucket = bucketFile.readRecord(currentBucketPosition);
         if(!bucket.isFull()){
             bucket.add(record);
             bucket.sortBucket();
@@ -102,9 +102,9 @@ public:
     }
 
     void split(Register& record, int height, int currentNodePosition, HashNode& currentNode, int currentBucketPosition,
-               Bucket& bucket) {
+               myBucket& bucket) {
         if(height == MAXHEIGHT){
-            Bucket bucketToLink;
+            myBucket bucketToLink;
             bucketToLink.add(record);
             bucketToLink.setNextBucket(currentBucketPosition);
             currentNode.bucketPosition = bucketFile.add(bucketToLink);
@@ -113,11 +113,11 @@ public:
         }
         vector<Register> records = bucket.getRecords();
         records.push_back(record);
-        Bucket bucket1, bucket2;
+        myBucket bucket1, bucket2;
         bool splitAgain = false;
         bool splitToLeft = false;
         for(auto& r : records){
-            bitset hashKey = myHash(r.getPrimaryKey());
+            myBitset hashKey = myHash(r.getPrimaryKey());
             if(hashKey[height] == 0){
                 if(!bucket1.isFull()) bucket1.add(r);
                 else{
@@ -158,7 +158,7 @@ public:
         int height = 0;
         removeUtil(ROOT, key, myHash(key), height);
     }
-    void removeUtil(int nodePosition, Key key, bitset hashKey, int& height) {
+    void removeUtil(int nodePosition, Key key, myBitset hashKey, int& height) {
         HashNode currentNode = indexFile.readRecord(nodePosition);
         if (currentNode.isLeaf) {
             deleteRecordInBucket(key, currentNode, nodePosition);
@@ -172,14 +172,14 @@ public:
         HashNode right = indexFile.readRecord(currentNode.right);
 
         if (left.isLeaf && right.isLeaf) {
-            Bucket bucket1 = bucketFile.readRecord(left.bucketPosition);
-            Bucket bucket2 = bucketFile.readRecord(right.bucketPosition);
+            myBucket bucket1 = bucketFile.readRecord(left.bucketPosition);
+            myBucket bucket2 = bucketFile.readRecord(right.bucketPosition);
             if (bucket1.empty() && bucket2.empty()) {
                 bucketFile.deleteRecord(left.bucketPosition);
                 bucketFile.deleteRecord(right.bucketPosition);
                 indexFile.deleteRecord(currentNode.left);
                 indexFile.deleteRecord(currentNode.right);
-                Bucket newBucket;
+                myBucket newBucket;
                 currentNode.isLeaf = true;
                 currentNode.bucketPosition = bucketFile.add(newBucket);
                 indexFile.writeRecord(nodePosition, currentNode);
@@ -189,7 +189,7 @@ public:
 
     void deleteRecordInBucket(Key key, HashNode &currentNode, AddressType nodePosition) {
         AddressType currentBucketPosition = currentNode.bucketPosition;
-        Bucket bucket = bucketFile.readRecord(currentBucketPosition);
+        myBucket bucket = bucketFile.readRecord(currentBucketPosition);
         auto differentRecords = bucket.getAllDifferentRecords(key);
         bucket.setRecords(differentRecords);
         bucketFile.writeRecord(currentBucketPosition, bucket);
