@@ -50,10 +50,10 @@ void testHash(string amount, vector<Universitario>& data){
   cout << "----------------------------------------" << endl;
 }
 
-void testSQF(string amount, vector<Universitario>& data){
+void testSQF(string amount, vector<Universitario>& data, int capacity){
   cout << "----------------------------------------" << endl;
   cout << "Start Test " << amount <<" - SQF" << endl;
-  SequentialFile<Universitario, const char*> sq(dataFilePath, auxFilePath);
+  SequentialFile<Universitario, const char*> sq(dataFilePath, auxFilePath, capacity);
   vector<Universitario> vu = data;
   for(int i = 0; i < vu.size(); i++){
     sq.add(vu[i]);
@@ -90,10 +90,11 @@ void TESTALL(){
   vector<string> files = {"../csv/Dataset/1k.csv","../csv/Dataset/5k.csv","../csv/Dataset/10k.csv",
                           "../csv/Dataset/50k.csv","../csv/Dataset/100k.csv"};
   vector<string> amount = {"1k", "5k", "10k", "50k", "100k"};
+  vector<int> capacity = {5, 20, 100, 300, 500};
   for(int i = 0; i < files.size(); i++){
     cout <<"-------------------------------------------" << endl;
     vector<Universitario> data = getUniversitarioData(files[i]);
-    testSQF(amount[i], data);
+    testSQF(amount[i], data, capacity[i]);
     testHash(amount[i],data);
   }
 }
