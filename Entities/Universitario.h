@@ -29,6 +29,8 @@ public:
         cout << "Codigo      : " << codigo << endl;
         cout << "Nombre      : " << nombre << endl;
         cout << "Carrera     : " << carrera << endl;
+        //cout << "NextDel     : " << nextDel << endl;
+        //cout << "Reference   : " << reference << endl;
     }
     bool operator < (Universitario& other){
         return strcmp(this->nombre, other.nombre) < 0;
