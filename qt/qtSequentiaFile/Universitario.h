@@ -1,4 +1,6 @@
-#pragma once
+#ifndef UNIVERSITARIO_H
+#define UNIVERSITARIO_H
+
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -8,7 +10,7 @@ using namespace std;
 class Universitario{
 private:
     char codigo[5];
-    char nombre[15];
+    char nombre[11];
     char carrera[15];
 
 public:
@@ -29,8 +31,6 @@ public:
         cout << "Codigo      : " << codigo << endl;
         cout << "Nombre      : " << nombre << endl;
         cout << "Carrera     : " << carrera << endl;
-        //cout << "NextDel     : " << nextDel << endl;
-        //cout << "Reference   : " << reference << endl;
     }
     bool operator < (Universitario& other){
         return strcmp(this->nombre, other.nombre) < 0;
@@ -62,30 +62,18 @@ public:
     bool greaterThanOrEqualToKey(const char* key){
         return strcmp(this->nombre, key) >= 0;
     }
-    void setCodigo(string codigo){
-        strcpy(this->codigo, codigo.c_str());
-    }
 
-    void setNombre(string nombre){
-        strcpy(this->nombre, nombre.c_str());
-    }
-    
-    void setCarrera(string carrera){
-        strcpy(this->carrera, carrera.c_str());
-    }
-
-    const char* getNombre(){
-        return this->nombre;
-    }
-    const char* getCodigo(){
+    string getCodigo(){
         return this->codigo;
     }
-};
 
-struct UniversitarioHash{
-    int operator()(const char* key){
-        string str(key);
-        hash<string> myHash;
-        return myHash(str);
+    string getNombre(){
+        return this->nombre;
+    }
+
+    string getCarrera(){
+        return this->carrera;
     }
 };
+
+#endif // UNIVERSITARIO_H

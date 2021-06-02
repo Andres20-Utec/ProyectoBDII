@@ -1,39 +1,37 @@
+#ifndef FREELIST_H
+#define FREELIST_H
+
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include "../Util/GlobalConstants.h"
+#include "GlobalConstants.h"
 using namespace std;
 
 template<class Register>
 class FreeList{
 private:
     string path;
-    long numberOfAccessesToSecondaryMemory;
 
     void readHeader(int& header, fstream& file){
         file.seekg(0, ios::beg);
         file.read((char *)& header, sizeof(int));
-        numberOfAccessesToSecondaryMemory += 1;
     }
-    
+
     void writeHeader(int& header, fstream& file){
         file.seekp(0, ios::beg);
         file.write((char *)& header, sizeof(int));
-        numberOfAccessesToSecondaryMemory += 1;
     }
-    
+
     void readRegister(Register& record, AddressType position, fstream& file){
         file.seekg(position*sizeof(Register)+sizeof(int), ios::beg);
         file.read((char*)& record, sizeof(Register));
-        numberOfAccessesToSecondaryMemory += 1;
     }
-    
+
     void writeRegister(Register& record, AddressType position, fstream& file){
         file.seekp(position*sizeof(Register)+sizeof(int), ios::beg);
         file.write((char*)& record, sizeof(Register));
-        numberOfAccessesToSecondaryMemory += 1;
     }
-    
+
     int numberOfRecords(fstream& file){
         if(file.is_open()){
             file.seekg(0, ios::end);
@@ -46,7 +44,6 @@ public:
     FreeList() = default;
     explicit FreeList(const string& path) {
         this->path = path;
-        this->numberOfAccessesToSecondaryMemory = 0;
     }
     void setPath(string path){
         this->path = path;
@@ -103,6 +100,7 @@ public:
     }
 
     Register readRecord(int position){
+        cout << "DBUG - Bucket.readRecord()"<< endl;
         fstream file(this->path.c_str(), ios::binary | ios::in);
         Register record;
         if(numberOfRecords(file) == 0) {
@@ -117,6 +115,7 @@ public:
     }
 
     void writeRecord(AddressType position, Register& record){
+        cout << "DBUG - Bucket.writeRecord()"<< endl;
         fstream file(this->path.c_str(), ios::binary | ios::in);
         if(numberOfRecords(file) == 0){
             cout << "archivo vacio - writeRecord()" << endl;
@@ -126,6 +125,7 @@ public:
             file.close();
             file.open(this->path.c_str(), ios::binary | ios::out | ios::in);
             writeRegister(record, position, file);
+            cout << "DBUG - Registro escrito satisfactoriamente"<< endl;
             file.close();
         }else{
             cout << "indice incorrecto - writeRecord()" << endl;
@@ -151,8 +151,6 @@ public:
             file.close();
         }else throw out_of_range("Indice incorrecto");
     }
-
-    long getNumberOfAccessesToSecondaryMemory(){
-        return this->numberOfAccessesToSecondaryMemory;
-    }
 };
+
+#endif // FREELIST_H

@@ -99,8 +99,8 @@ void searchPerRange2Test(){
 
 void fullAuxFileTest(){
     printTestStart("auxfile is full");
-    cout << "CAPACITY del auxfile >> " << CAPACITY << endl;
-    for(int i = 1; i <= CAPACITY + 1; ++i){
+    cout << "CAPACITY del auxfile >> " << test.getCapacity() << endl;
+    for(int i = 1; i <= test.getCapacity() + 1; ++i){
         test.add(Universitario("P-18", "Andres", "cs"));
     }
     test.printAll();

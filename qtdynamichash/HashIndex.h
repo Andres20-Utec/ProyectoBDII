@@ -1,3 +1,5 @@
+#ifndef HASHINDEX_H
+#define HASHINDEX_H
 
 #include <functional>
 #include <bitset>
@@ -6,31 +8,45 @@
 #include "Bucket.h"
 using namespace std;
 
-template <class Register, class Key, class Hash = hash<Key> > 
+template <class Register, class Key, class Hash = hash<Key> >
 class HashIndex{
 private:
-    int MAXHEIGHT;
-    typedef Bucket<Register, Key> myBucket;
-    typedef bitset<LIMIT> myBitset;
-    FreeList<myBucket> bucketFile;
+    typedef Bucket<Register, Key> newBucket;
+    typedef bitset<MAXHEIGHT> newbitset;
+    FreeList<newBucket> bucketFile;
     FreeList<HashNode> indexFile;
     Hash myHash;
+
 public:
     HashIndex()= default;
-    HashIndex(const string& indexFilePath, const string& bucketFilePath, int MAXHEIGHT_ = 3){
+    HashIndex(const string& indexFilePath, const string& bucketFilePath){
         this->bucketFile.setPath(bucketFilePath);
         this->indexFile.setPath(indexFilePath);
-        if(MAXHEIGHT_ > LIMIT - 1) throw invalid_argument("Invalid MAXHEIGHT, must to be < " + to_string(LIMIT));
-        this->MAXHEIGHT = MAXHEIGHT_;
     }
     void initializeFirstValues(){
         HashNode root(1, 2), v1(0), v2(1);
-        myBucket b1, b2;
+        newBucket b1, b2;
         this->bucketFile.add(b1);
         this->bucketFile.add(b2);
         this->indexFile.add(root);
         this->indexFile.add(v1);
         this->indexFile.add(v2);
+    }
+
+    vector<Register> returnAllRecord(){
+        int bucketsNumber = bucketFile.getNumberOfRecords();
+        vector<Register> output;
+        for(int i = 0; i < bucketsNumber; i++){
+            newBucket bucket = bucketFile.readRecord(i);
+            if(bucket.nextDel == -1){
+                continue;
+            }
+            for(auto& r : bucket.getRecords()){
+                output.push_back(r);
+            }
+        }
+        sort(output.begin(), output.end(), newBucket::compareRecords);
+        return output;
     }
 
     void insertAll(vector<Register> records){
@@ -42,7 +58,7 @@ public:
         }
     }
 
-    AddressType searchNode(AddressType nodePosition, myBitset key, int& height){
+    AddressType searchNode(AddressType nodePosition, newbitset key, int& height){
         HashNode node = indexFile.readRecord(nodePosition);
         if(node.isLeaf)
             return nodePosition;
@@ -52,14 +68,14 @@ public:
         }
     }
     vector<Register> search(Key searchKey){
-        myBitset hashKey = myHash(searchKey);
+        newbitset hashKey = myHash(searchKey);
         int height = 0;
         AddressType currentNodePosition = searchNode(ROOT, hashKey, height);
         HashNode currentNode = indexFile.readRecord(currentNodePosition);
         AddressType currentBucketPosition = currentNode.getBucketPosition();
         vector<Register> output;
         while(currentBucketPosition != -1){
-            myBucket bucket = bucketFile.readRecord(currentBucketPosition);
+            newBucket bucket = bucketFile.readRecord(currentBucketPosition);
             for(auto& r: bucket.getRecords()){
                 if(r.equalToKey(searchKey))
                     output.push_back(r);
@@ -73,13 +89,13 @@ public:
         int bucketsNumber = bucketFile.getNumberOfRecords();
         vector<Register> output;
         for(int i = 0; i < bucketsNumber; ++i){
-            myBucket bucket = bucketFile.readRecord(i);
+            newBucket bucket = bucketFile.readRecord(i);
             for(auto& r : bucket.getRecords()){
                 if(r.lessThanOrEqualToKey(endKey) && r.greaterThanOrEqualToKey(beginKey))
                     output.push_back(r);
             }
         }
-        sort(output.begin(), output.end(), myBucket::compareRecords);
+        sort(output.begin(), output.end(), newBucket::compareRecords);
         return output;
     }
 
@@ -87,11 +103,11 @@ public:
         if(bucketFile.getNumberOfRecords() == 0)
             initializeFirstValues();
         int height = 0;
-        myBitset hashKey = myHash(record.getPrimaryKey());
+        newbitset hashKey = myHash(record.getPrimaryKey());
         AddressType currentNodePosition = searchNode(ROOT, hashKey, height);
         HashNode currentNode = indexFile.readRecord(currentNodePosition);
         AddressType currentBucketPosition = currentNode.getBucketPosition();
-        myBucket bucket = bucketFile.readRecord(currentBucketPosition);
+        newBucket bucket = bucketFile.readRecord(currentBucketPosition);
         if(!bucket.isFull()){
             bucket.add(record);
             bucket.sortBucket();
@@ -101,9 +117,9 @@ public:
     }
 
     void split(Register& record, int height, int currentNodePosition, HashNode& currentNode, int currentBucketPosition,
-               myBucket& bucket) {
+               newBucket& bucket) {
         if(height == MAXHEIGHT){
-            myBucket bucketToLink;
+            newBucket bucketToLink;
             bucketToLink.add(record);
             bucketToLink.setNextBucket(currentBucketPosition);
             currentNode.bucketPosition = bucketFile.add(bucketToLink);
@@ -112,11 +128,11 @@ public:
         }
         vector<Register> records = bucket.getRecords();
         records.push_back(record);
-        myBucket bucket1, bucket2;
+        newBucket bucket1, bucket2;
         bool splitAgain = false;
         bool splitToLeft = false;
         for(auto& r : records){
-            myBitset hashKey = myHash(r.getPrimaryKey());
+            newbitset hashKey = myHash(r.getPrimaryKey());
             if(hashKey[height] == 0){
                 if(!bucket1.isFull()) bucket1.add(r);
                 else{
@@ -157,7 +173,7 @@ public:
         int height = 0;
         removeUtil(ROOT, key, myHash(key), height);
     }
-    void removeUtil(int nodePosition, Key key, myBitset hashKey, int& height) {
+    void removeUtil(int nodePosition, Key key, newbitset hashKey, int& height) {
         HashNode currentNode = indexFile.readRecord(nodePosition);
         if (currentNode.isLeaf) {
             deleteRecordInBucket(key, currentNode, nodePosition);
@@ -171,14 +187,14 @@ public:
         HashNode right = indexFile.readRecord(currentNode.right);
 
         if (left.isLeaf && right.isLeaf) {
-            myBucket bucket1 = bucketFile.readRecord(left.bucketPosition);
-            myBucket bucket2 = bucketFile.readRecord(right.bucketPosition);
+            newBucket bucket1 = bucketFile.readRecord(left.bucketPosition);
+            newBucket bucket2 = bucketFile.readRecord(right.bucketPosition);
             if (bucket1.empty() && bucket2.empty()) {
                 bucketFile.deleteRecord(left.bucketPosition);
                 bucketFile.deleteRecord(right.bucketPosition);
                 indexFile.deleteRecord(currentNode.left);
                 indexFile.deleteRecord(currentNode.right);
-                myBucket newBucket;
+                newBucket newBucket;
                 currentNode.isLeaf = true;
                 currentNode.bucketPosition = bucketFile.add(newBucket);
                 indexFile.writeRecord(nodePosition, currentNode);
@@ -188,7 +204,7 @@ public:
 
     void deleteRecordInBucket(Key key, HashNode &currentNode, AddressType nodePosition) {
         AddressType currentBucketPosition = currentNode.bucketPosition;
-        myBucket bucket = bucketFile.readRecord(currentBucketPosition);
+        newBucket bucket = bucketFile.readRecord(currentBucketPosition);
         auto differentRecords = bucket.getAllDifferentRecords(key);
         bucket.setRecords(differentRecords);
         bucketFile.writeRecord(currentBucketPosition, bucket);
@@ -199,13 +215,7 @@ public:
             deleteRecordInBucket(key, currentNode, nodePosition);
         }
     }
-
-    int getMaxHeight(){
-        return MAXHEIGHT;
-    }
-
-    long getNumberOfAccessesToSecondaryMemory(){
-        return this->bucketFile.getNumberOfAccessesToSecondaryMemory() +
-                this->indexFile.getNumberOfAccessesToSecondaryMemory();
-    }
 };
+
+
+#endif // HASHINDEX_H

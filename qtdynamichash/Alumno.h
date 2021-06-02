@@ -1,3 +1,6 @@
+#ifndef ALUMNO_H
+#define ALUMNO_H
+
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -93,30 +96,6 @@ public:
             return this->mensualidad;
     }
 
-    void setCodigo(string codigo){
-        strcmp(this->codigo, codigo.c_str());
-    }
-
-    void setNombre(string nombre){
-        strcmp(this->codigo, nombre.c_str());
-    }
-
-    void setApellidos(string apellido){
-        strcmp(this->apellidos, apellido.c_str());
-    }
-
-    void setCarrera(string carrera){
-        strcmp(this->carrera, carrera.c_str());
-    }
-
-    void setCiclo(string ciclo){
-        this->ciclo = stoi(ciclo);
-    }
-
-    void setMensualidad(string mensualidad){
-        this->mensualidad = stof(mensualidad);
-    }
-
 };
 
 struct AlumnoHash{
@@ -126,3 +105,6 @@ struct AlumnoHash{
         return myHash(str);
     }
 };
+
+
+#endif // ALUMNO_H
