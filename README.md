@@ -264,12 +264,12 @@ el promedio de este. Asimismo, esto fue ejecutado en los diferentes datasets cre
 En la siguiente gráfica se observa el tiempo promedio de la función
 de inserción del Sequential File.
 
-![enter image description here](insert sqf)
+![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/Grafica_T2.png)
 
 
 En esta gráfica, se realiza el mismo proceso utilizando el Extendible Hashing.
 
-![enter image description here](insert hash)
+![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/Grafica_T4.png)
 
 En resumen, estos fueron los resultados:
 
@@ -285,11 +285,11 @@ En resumen, estos fueron los resultados:
 En la siguiente gráfica se observa el tiempo promedio de la función
 de búsqueda del Sequential File.
 
-![enter image description here](search sqf)
+![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/Grafica_T1.png)
 
 En esta gráfica, se realiza el mismo proceso utilizando el Extendible Hashing.
 
-![enter image description here](insert hash)
+![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/Grafica_T3.png)
 
 En resumen, estos fueron los resultados:
 
@@ -310,7 +310,7 @@ la cantidad de accesos a disco. Asimismo, esto fue ejecutado en los diferentes d
 En la siguiente gráfica se observa la cantidad de accesos a memoria secundaria de la 
 función de inserción del Sequential File y extendible Hashing.
 
-![enter image description here](insert hash)
+![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/Grafica_AMS1.png)
 
 En resumen, estos fueron los resultados:
 
@@ -326,11 +326,11 @@ En resumen, estos fueron los resultados:
 En la siguiente gráfica se observa la cantidad de accesos a memoria secundaria de la
 función de búsqueda del Sequential File.
 
-![enter image description here](search sqf)
+![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/Grafica_AMS2.png)
 
 En esta gráfica, se realiza el mismo proceso utilizando el Extendible Hashing.
 
-![enter image description here](insert hash)
+![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/Grafica_AMS3.png)
 
 En resumen, estos fueron los resultados:
 
