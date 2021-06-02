@@ -522,22 +522,22 @@ MainWindow::MainWindow(QWidget *parent)
 
 Botón actualizar: Imprime la tabla csv en la interface, y nos permite mostrarla luego de cada operación.
 
-![enter image description here]()
+![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/QT_ACTUALIZAR.png)
 
 Botón Insertar: Inserta el registro en el extendible hash a partir de operaciones localizadas en un hashController.
 
-![enter image description here]()
+![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/QT_INSERT.png)
 
 Botón search: Busca el registro en el extendible hash a partir de operaciones localizadas en un hashController.
 
-![enter image description here]()
+![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/QT_SEARCH.png)
 
 Botón searchRange: Busca los registros entre una key de inicio y una de final en el extendible hash a partir de operaciones localizadas en un hashController.
 
-![enter image description here]()
+![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/QT_SEARCH_RANGE.png)
 
 Botón delete: Busca el registro indicado y lo elimina en el extendible hash a partir de operaciones localizadas en un hashController.
 
-![enter image description here]()
+![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/QT_DELETE.png)
 
 Por último creamos un HashController para manipular las operaciones del extendible hash desde cualquier lugar.
