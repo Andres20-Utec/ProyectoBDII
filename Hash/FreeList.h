@@ -8,25 +8,30 @@ template<class Register>
 class FreeList{
 private:
     string path;
+    long numberOfAccessesToSecondaryMemory;
 
     void readHeader(int& header, fstream& file){
         file.seekg(0, ios::beg);
         file.read((char *)& header, sizeof(int));
+        numberOfAccessesToSecondaryMemory += 1;
     }
     
     void writeHeader(int& header, fstream& file){
         file.seekp(0, ios::beg);
         file.write((char *)& header, sizeof(int));
+        numberOfAccessesToSecondaryMemory += 1;
     }
     
     void readRegister(Register& record, AddressType position, fstream& file){
         file.seekg(position*sizeof(Register)+sizeof(int), ios::beg);
         file.read((char*)& record, sizeof(Register));
+        numberOfAccessesToSecondaryMemory += 1;
     }
     
     void writeRegister(Register& record, AddressType position, fstream& file){
         file.seekp(position*sizeof(Register)+sizeof(int), ios::beg);
         file.write((char*)& record, sizeof(Register));
+        numberOfAccessesToSecondaryMemory += 1;
     }
     
     int numberOfRecords(fstream& file){
@@ -41,6 +46,7 @@ public:
     FreeList() = default;
     explicit FreeList(const string& path) {
         this->path = path;
+        this->numberOfAccessesToSecondaryMemory = 0;
     }
     void setPath(string path){
         this->path = path;
@@ -144,5 +150,9 @@ public:
             writeRegister(record, position, file);
             file.close();
         }else throw out_of_range("Indice incorrecto");
+    }
+
+    long getNumberOfAccessesToSecondaryMemory(){
+        return this->numberOfAccessesToSecondaryMemory;
     }
 };

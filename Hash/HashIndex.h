@@ -15,7 +15,6 @@ private:
     FreeList<myBucket> bucketFile;
     FreeList<HashNode> indexFile;
     Hash myHash;
-
 public:
     HashIndex()= default;
     HashIndex(const string& indexFilePath, const string& bucketFilePath, int MAXHEIGHT_ = 3){
@@ -203,5 +202,10 @@ public:
 
     int getMaxHeight(){
         return MAXHEIGHT;
+    }
+
+    long getNumberOfAccessesToSecondaryMemory(){
+        return this->bucketFile.getNumberOfAccessesToSecondaryMemory() +
+                this->indexFile.getNumberOfAccessesToSecondaryMemory();
     }
 };

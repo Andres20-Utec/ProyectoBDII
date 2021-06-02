@@ -26,6 +26,7 @@ private:
     string dataFilePath;
     string auxFilePath;
     int CAPACITY;
+    long numberOfAccessesToSecondaryMemory;
 
     void writeRegister(int position, fstream& file, Register& record, FileID id){
         if(!file.is_open()) throw out_of_range("writeRegister() - Archivo no abierto");
@@ -36,6 +37,7 @@ private:
         else
             throw invalid_argument("writeRegister() - id invalido");
         file.write((char*)& record, sizeof(Register));
+        numberOfAccessesToSecondaryMemory += 1;
     }
 
     void readRegister(int position, fstream& file, Register& record, FileID id){
@@ -47,6 +49,7 @@ private:
         else
             throw invalid_argument("readRegister() - id invalido");
         file.read((char*)& record, sizeof(Register));
+        numberOfAccessesToSecondaryMemory += 1;
     }
 
     int recordsNumber(fstream& file, FileID id){
@@ -59,7 +62,7 @@ private:
                     (int) file.tellg() / sizeof(Register);
             file.seekg(0, ios::beg);
             return n;
-        }return 0;
+        } return 0;
     }
 
     int recordsNumber(string filename, FileID id){
@@ -74,6 +77,7 @@ private:
         file.seekp(0, ios::beg);
         file.write((char *)& positionOfTheFirstRecord, sizeof(AddressType));
         file.write((char *)& referenceOfTheFirstRecord, sizeof(char));
+        numberOfAccessesToSecondaryMemory += 2;
     }
 
     void readFirstRegisterInformation(fstream& file, AddressType& positionOfTheFirstRecord, char& referenceOfTheFirstRecord){
@@ -81,6 +85,7 @@ private:
             file.seekg(0, ios::beg);
             file.read((char *)& positionOfTheFirstRecord, sizeof(AddressType));
             file.read((char *)& referenceOfTheFirstRecord, sizeof(char));
+            numberOfAccessesToSecondaryMemory += 2;
         }else{
             positionOfTheFirstRecord = -1;
             referenceOfTheFirstRecord = INVALID;
@@ -91,12 +96,14 @@ private:
         if(!file.is_open()) throw out_of_range("writeDeletedRegistersStatus() - Archivo no abierto");
         file.seekp(sizeof(AddressType)+sizeof(char), ios::beg);
         file.write((char *)& deletedRegisters, sizeof(bool));
+        numberOfAccessesToSecondaryMemory += 1;
     }
 
     void readDeletedRegistersStatus(fstream& file, bool& deletedRegisters){
         if(!file.is_open()) throw out_of_range("readDeletedRegistersStatus() - Archivo no abierto");
         file.seekg(sizeof(AddressType)+sizeof(char), ios::beg);
         file.read((char *)& deletedRegisters, sizeof(bool));
+        numberOfAccessesToSecondaryMemory += 1;
     }
 
     static bool compareRecords(Register& r1, Register& r2){
@@ -136,6 +143,7 @@ public:
         this->dataFilePath = dataFilePath;
         this->auxFilePath = auxFilePath;
         this->CAPACITY = CAPACITY;
+        this->numberOfAccessesToSecondaryMemory = 0;
     }
 
     void insertAll(vector<Register> &records){
@@ -416,6 +424,7 @@ public:
             writeRegister(currentPosition, dataFile, r1, DATAFILE);
         }
         auxFile.write((char*)& record, sizeof(Register));
+        numberOfAccessesToSecondaryMemory += 1;
         auxFile.close();
         dataFile.close();
     }
@@ -454,6 +463,7 @@ public:
         auxFile.close();
         auxFile.open(auxFilePath, ios::binary | ios::out | ios::app);
         auxFile.write((char*)& record, sizeof(Register));
+        numberOfAccessesToSecondaryMemory += 1;
         auxFile.close();
         dataFile.close();
     }
@@ -527,7 +537,12 @@ public:
     int getCapacity(){
         return this->CAPACITY;
     }
+
     void setCapacity(int CAPACITY_){
         this->CAPACITY = CAPACITY_;
+    }
+
+    long getNumberOfAccessesToSecondaryMemory(){
+        return this->numberOfAccessesToSecondaryMemory;
     }
 };
