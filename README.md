@@ -372,6 +372,7 @@ Botón delete: Busca el registro indicado y lo elimina en el Sequential File a p
 
 Por último creamos un SequentialController para manipular las operaciones del Sequential File desde cualquier lugar.
 
+```
 class SequentialController{
 public:
 
