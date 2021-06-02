@@ -308,12 +308,7 @@ la cantidad de accesos a disco. Asimismo, esto fue ejecutado en los diferentes d
 
 #### * Ejecución de la función de inserción
 En la siguiente gráfica se observa la cantidad de accesos a memoria secundaria de la 
-función de inserción del Sequential File.
-
-![enter image description here](insert sqf)
-
-
-En esta gráfica, se realiza el mismo proceso utilizando el Extendible Hashing.
+función de inserción del Sequential File y extendible Hashing.
 
 ![enter image description here](insert hash)
 
