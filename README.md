@@ -389,24 +389,8 @@ Por último creamos un SequentialController para manipular las operaciones del S
 ```
 class SequentialController{
 public:
-
-    void deleteFiles(){
-        remove(dataFilePath.c_str());
-        remove(auxFilePath.c_str());
-    }
-
-    void printTestStart(string s){
-        string txt = "******** Test: " + s + " ********";
-        cout << txt << endl;
-    }
-    void printTestEnd(){
-        cout << " ********************************" << endl;
-    }
-
-    void insertByDefault(string codigo, string nombre, string carrera){
-        cout << R"(Se inserta >> )" << endl;
-        test.add(Universitario(codigo, nombre, carrera));
-    }
+    
+    ...
 
     void insertAllTest(){
         printTestStart(R"(insertAll("Andres", "Sagasti", "Claudia"))");
@@ -453,50 +437,12 @@ public:
         return records;
     }
 
-    void fullAuxFileTest(){
-        printTestStart("auxfile is full");
-        cout << "CAPACITY del auxfile >> " << CAPACITY << endl;
-        for(int i = 1; i <= CAPACITY + 1; ++i){
-            test.add(Universitario("P-18", "Andres", "cs"));
-        }
-        test.printAll();
-        cout << "Luego de agregar un elemento mas, se reconstruye el archivo" << endl;
-        test.add(Universitario("P-18", "Andres", "cs"));
-        test.printAll();
-        printTestEnd();
-    }
     void deleteTest(string name){
         printTestStart(R"(delete()");
         test.removeRecord(name.c_str());
     }
 
-    void specialCase(){
-        printTestStart("Agregar un nuevo registro que es menor al primero");
-        vector<Universitario> records = {
-                Universitario("P-11", "Ana", "cs"),
-                Universitario("P-72", "Carlos", "cs")};
-        test.insertAll(records);
-        test.add(Universitario("P-18", "Aa", "cs"));
-        test.printAll();
-        test.reBuild();
-        cout << "Luego de reconstruir el datafile" << endl;
-        test.printAll();
-        printTestEnd();
-    }
-
-    void specialCase2(){
-        printTestStart("Agregar un nuevo registro que es mayor que el ultimo");
-        vector<Universitario> records = {
-                Universitario("P-11", "Ana", "cs"),
-                Universitario("P-72", "Carlos", "cs")};
-        test.insertAll(records);
-        test.add(Universitario("P-18", "Zz", "cs"));
-        test.printAll();
-        test.reBuild();
-        cout << "Luego de reconstruir el archivo" << endl;
-        test.printAll();
-        printTestEnd();
-    }
+    ...
 
 };
 ```
@@ -545,6 +491,42 @@ Botón delete: Busca el registro indicado y lo elimina en el extendible hash a p
 ![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/QT_DELETE.png)
 
 Por último creamos un HashController para manipular las operaciones del extendible hash desde cualquier lugar.
+
+```
+class HashController{
+public:
+
+    ...
+    
+    void insertTest(string codigo, string nombre, string apellidos, string carrera, int ciclo, float mensualidad) {
+        printTestStart("insert()");
+        insertByDefault(codigo, nombre, apellidos, carrera, ciclo, mensualidad);
+        printTestEnd();
+    }
+
+    vector<Alumno> searchTest(string codigo){
+        printTestStart(R"(search())");
+        vector<Alumno> output = test.search(codigo.c_str());
+        printTestEnd();
+        return output;
+    }
+
+    vector<Alumno> searchPerRangeTest(string begin,string end){
+        printTestStart(R"(serachPerRange())");
+        vector<Alumno> output = test.searchInRange(begin.c_str(), end.c_str());
+        printTestEnd();
+        return output;
+    }
+
+
+    void deleteTest(string codigo){
+        printTestStart("Delete function");
+        test.remove(codigo.c_str());
+        printTestEnd();
+    }
+
+};
+```
 
 ## Video
 
