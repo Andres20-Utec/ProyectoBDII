@@ -362,13 +362,23 @@ MainWindow::MainWindow(QWidget *parent)
 
 Botón actualizar: Imprime la tabla csv en la interface, y nos permite mostrarla luego de cada operación.
 
+![enter image description here]()
+
 Botón Insertar: Inserta el registro en el Sequential File a partir de operaciones localizadas en un SequentialController.
+
+![enter image description here]()
 
 Botón search: Busca el registro en el Sequential File a partir de operaciones localizadas en un SequentialController.
 
+![enter image description here]()
+
 Botón searchRange: Busca los registros entre una key de inicio y una de final en el Sequential File a partir de operaciones localizadas en un SequentialController.
 
+![enter image description here]()
+
 Botón delete: Busca el registro indicado y lo elimina en el Sequential File a partir de operaciones localizadas en un SequentialController.
+
+![enter image description here]()
 
 Por último creamos un SequentialController para manipular las operaciones del Sequential File desde cualquier lugar.
 
@@ -512,12 +522,22 @@ MainWindow::MainWindow(QWidget *parent)
 
 Botón actualizar: Imprime la tabla csv en la interface, y nos permite mostrarla luego de cada operación.
 
+![enter image description here]()
+
 Botón Insertar: Inserta el registro en el extendible hash a partir de operaciones localizadas en un hashController.
+
+![enter image description here]()
 
 Botón search: Busca el registro en el extendible hash a partir de operaciones localizadas en un hashController.
 
+![enter image description here]()
+
 Botón searchRange: Busca los registros entre una key de inicio y una de final en el extendible hash a partir de operaciones localizadas en un hashController.
 
+![enter image description here]()
+
 Botón delete: Busca el registro indicado y lo elimina en el extendible hash a partir de operaciones localizadas en un hashController.
+
+![enter image description here]()
 
 Por último creamos un HashController para manipular las operaciones del extendible hash desde cualquier lugar.
