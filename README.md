@@ -1,5 +1,7 @@
 # Base de Datos 2: Proyecto 1
 
+[VIDEO SE ENCUENTRA AL FINAL DEL README ->]
+
 Integrantes:
 
 * Nicho, Jorge
