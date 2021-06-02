@@ -333,6 +333,36 @@ En resumen, estos fueron los resultados:
 |   50k   |                    50009                    |                       23                       |
 |   100k  |                    100009                   |                       22                       |
 
+## Análisis
+* Al llenarse el archivo auxiliar del Sequential File, este debe de reconstruir el archivo
+nuevamente. Debido a ello, resulta que a veces la inserción demora más de lo normal. Por
+lo que es necesario definir la capacidad del archivo auxiliar en un punto intermedio. Es decir, 
+  no debería ser una capacidad muy pequeña, ya que al haber muchas inserciones, se estaría
+reconstruyendo varias veces y degradando la performance. Desde el punto contrario, con
+una capacidad muy alta, se evita la reconstrucción a cada momento, pero al realizar varias
+búsquedas, no se aprovecha la búsqueda binaria debido a que existe registros en el archivo
+auxiliar por lo que se opta la búsqueda secuencial que es deficiente.
+
+* Se observa en los resultados que la inserción en el sequential file resulta mejor que en el
+Hash y esto se debe a un escenario. Esto es, que al insertar un registro con una llave
+primaria que resulta ser insertada en las primeras posiciones, por lo que no toma mucho
+tiempo. En el caso del Extendible Hashing, va a depender del resultado de aplicar la función
+hash a la llave, ya que con este resultado identificamos el nodo hoja correspondiente.
+Asimismo, en este proceso, que además toma tiempo, tiene el factor de que si el bucket se
+encuentra completo se tiene que realizar un split, es decir crear y escribir dos nodos y dos
+buckets.
+
+* El Extendible Hashing depende de una máxima altura, la cual debe ser definida en un punto
+intermedio. Es decir, si se define en una altura muy pequeña, al haber gran cantidad de
+inserciones, el árbol se completa por lo que se procede a enlazar páginas lo cual degrada la
+búsqueda. Esto es debido a que la búsqueda secuencial prevalece ante la búsqueda
+binaria. Desde el punto contrario, con una altura muy grande y al haber gran cantidad de
+inserciones, sucede que al completar el bucket que apunta un nodo hoja, se debe realizar
+un split. En este proceso, se actualiza el nodo padre y se crea dos nodos hijos y sus
+buckets por lo que es necesario acceder al disco en varias ocasiones. Esto significa que
+degrada el proceso de inserción, pero aumenta el rendimiento de la búsqueda, ya que
+prevalece la búsqueda binaria.
+
 
 ## QT
 
