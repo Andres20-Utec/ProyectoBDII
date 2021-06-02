@@ -7,27 +7,18 @@ Integrantes:
 * Tanta, Johan
 
 ## Introducción
-La tecnología una parte fundamental en la solución de los problemas sanitarios que vivimos
-en la actualidad. En consecuencia, uno de los ámbitos que han incrementado exponencialmente
-su impacto y su promoción en la sociedad, considerado como una "alternativa segura" de diversión,
-son los videojuegos. Tanto es así, que gran cantidad de jugadores casuales y targets imprevistos
-se han unido a esta forma de entretenimiento. Prueba de ello, es que a mediados del presente año 2020,
-2 juegos casuales "FallGuys" y "AmongUs" (desarrollado el 2016 para plataformas móviles)
-han dado mantenimiento a sus plataformas por fallas en los servidores por la alta concurrencia de
-jugadores no contemplada. Esto ha promovido que plataformas de distribución de juegos como
-STEAM presenten catálogos extendidos y requieran cuantificar a los jugadores por juego para exigir la robustez de los
-servidores tanto propios como de los juegos de su catálogo.
+La tecnología una parte fundamental en la solución de los problemas diversos que vivimos 
+en la actualidad. En consecuencia, uno de los problemas que siempre ha existido en las universidades es el mantenimiento de su intranet, en especial el sistema de matrícula. 
+Prueba de ello, es que a mediados del anterior año 2020 e intensificado por una mayor cantidad de estudiantes conectados y siendo admitidos a universidades, estas han dado mayor mantenimiento a sus plataformas por fallas en los servidores debido a la alta concurrencia de los estudiantes que no fueron previamente contempladas.
 
-El objetivo de este proyecto es realizar un gestor de base de datos con interfaz gráfica, utilizando
-operaciones de búsqueda, búsqueda por rango, inserción y eliminación, usando dos técnicas de organización
-de archivos: Sequential File y Extendible Hashing.
+Esto ha promovido que universidades como UTEC mejoren su sistema y requieran cuantificar a los estudiantes para exigir la robustez de los servidores.
 
-El dominio de datos esta basado en la plataforma digital de videojuegos, STEAM.
-Los campos son: Id, Nombre, Descripción y Horas Jugadas.
+El objetivo de este proyecto es realizar un gestor de base de datos con interfaz gráfica, utilizando operaciones de búsqueda, búsqueda por rango, inserción y eliminación, usando dos técnicas de organización de archivos: Sequential File y Extendible Hashing.
 
-Los resultados fueron satisfactorios ya que pudimos crear un gestor de base de datos con una
-interfaz amigable para el usuario para ambas técnicas de organización de archivos. Este también fue
-puesto a prueba para medir su desempeño en las diferentes operaciones, y posteriormente fue analizado.
+El dominio de datos esta basado en los estudiantes de la Universidad de Ingeniería y Tecnología - UTEC. Los campos son: Código, Nombre y Carrera.
+
+Los resultados fueron satisfactorios ya que pudimos crear un gestor de base de datos con una interfaz amigable para el usuario para ambas técnicas de organización de archivos. Este también fue puesto a prueba para medir su desempeño en las diferentes operaciones, y posteriormente fue analizado.
+
 
 ## Consideraciones
 En primer lugar, el **Sequential File** escribe en el datafile la position y referencia
