@@ -360,25 +360,29 @@ MainWindow::MainWindow(QWidget *parent)
 }
 ```
 
+Botón carga inicial: Carga los registros iniciales.
+
+![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/QT2_INITIAL_DATA.png)
+
 Botón actualizar: Imprime la tabla csv en la interface, y nos permite mostrarla luego de cada operación.
 
-![enter image description here]()
+![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/QT2_ACTUALIZAR.png)
 
 Botón Insertar: Inserta el registro en el Sequential File a partir de operaciones localizadas en un SequentialController.
 
-![enter image description here]()
+![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/QT2_INSERT.png)
 
 Botón search: Busca el registro en el Sequential File a partir de operaciones localizadas en un SequentialController.
 
-![enter image description here]()
+![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/QT2_SEARCH.png)
 
 Botón searchRange: Busca los registros entre una key de inicio y una de final en el Sequential File a partir de operaciones localizadas en un SequentialController.
 
-![enter image description here]()
+![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/QT2_SEARCH_RANGE.png)
 
 Botón delete: Busca el registro indicado y lo elimina en el Sequential File a partir de operaciones localizadas en un SequentialController.
 
-![enter image description here]()
+![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/QT2_DELETE.png)
 
 Por último creamos un SequentialController para manipular las operaciones del Sequential File desde cualquier lugar.
 
@@ -541,3 +545,7 @@ Botón delete: Busca el registro indicado y lo elimina en el extendible hash a p
 ![enter image description here](https://github.com/Andres20-Utec/ProyectoBDII/blob/main/Imagenes/QT_DELETE.png)
 
 Por último creamos un HashController para manipular las operaciones del extendible hash desde cualquier lugar.
+
+## Video
+
+Se encuentra en los archivos.
