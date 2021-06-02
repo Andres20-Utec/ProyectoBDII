@@ -32,14 +32,14 @@ void hashTest(string amount, vector<Universitario>& data, int maxheight){
   }
   for(int i = 0; i < 6; i++){
     auto start  = chrono::steady_clock::now();
-    dinamicHash.insert(vu[i*100]);
+    dinamicHash.insert(vu[100]);
     auto end    = chrono::steady_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end-start).count();
     cout <<"Add duration: " <<duration << endl;
   }
   for(int i = 0; i < 5; i++){
     auto start  = chrono::steady_clock::now();
-    const char* codigo = vu[i*100].getNombre();
+    const char* codigo = vu[100].getNombre();
     dinamicHash.search(codigo);
     auto end    = chrono::steady_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end-start).count();
@@ -60,14 +60,14 @@ void sqfTest(string amount, vector<Universitario>& data, int capacity){
   }
   for(int i = 0; i < 6; i++){
     auto start  = chrono::steady_clock::now();
-    sq.add(vu[i*100]);
+    sq.add(vu[100]);
     auto end = chrono::steady_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end-start).count();
     cout <<"Add Duration: " <<duration << endl;
   }
   for(int i = 0; i < 5; i++){
     auto start  = chrono::steady_clock::now();
-    const char* codigo = vu[i*100].getNombre();
+    const char* codigo = vu[100].getNombre();
     sq.search(codigo);
     auto end    = chrono::steady_clock::now();
     auto duration = chrono::duration_cast<chrono::microseconds>(end-start).count();
@@ -90,8 +90,8 @@ void PARSERTEST(){
   vector<string> files = {"../csv/Dataset/1k.csv","../csv/Dataset/5k.csv","../csv/Dataset/10k.csv",
                           "../csv/Dataset/50k.csv","../csv/Dataset/100k.csv"};
   vector<string> amount = {"1k", "5k", "10k", "50k", "100k"};
-  vector<int> capacity = {50, 250, 500, 2500, 5000};
-  vector<int> height = {8, 10, 11, 14, 15};
+  vector<int> capacity = {50, 250, 400, 1500, 2000};
+  vector<int> height = {7, 9, 10, 12, 14};
   for(int i = 0; i < files.size(); i++){
     cout <<"-------------------------------------------" << endl;
     vector<Universitario> data = getUniversitarioData(files[i]);
